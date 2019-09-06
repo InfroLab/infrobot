@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 import logging
 
-BOT_TOKEN = 'NjE5Mjc4NjM5MTY2NTIxMzY1.XXI0Tw.yGUBow_cxD6KIKTtmOb2GV0mFtA'
+BOT_TOKEN = '{REMOVED}'
 CMD_PREFIX = '!'
 logging.basicConfig(level=logging.INFO)
 updates_reply = 'Type !updates {pack name} to get access to updates channel. Pack names can be: world_bosses, forsaken_temple, dormheim_pipeline, random_spawns.'
@@ -14,7 +14,7 @@ updates_switch = {
     'random_spawns' : 'Type !updates random_spawns {your_paypal_email}. If successfull, you will be given access to #random-spawns-pack channel.'
     }
 
-client = discord.Client(activity=discord.Game(name='All games at once!'))
+#client = discord.Client(activity=discord.Game(name='All games at once!'))
 
 bot = commands.Bot(command_prefix=CMD_PREFIX)
 
@@ -42,38 +42,5 @@ async def updates(ctx, *args):
             await ctx.send(args[1])
 
 
-client.run(BOT_TOKEN)
+#client.run(BOT_TOKEN)
 bot.run(BOT_TOKEN)
-
-
-
-
-
-
-
-
-
-
-
-#@client.event
-#async def on_ready():
-#    print('We have logged in as {0.user}'.format(client))
-
-#@client.event
-#async def on_message(message):
-#    if message.author == client.user:
-#        return
-
-#    if message.content.startswith('$hello'):
-#        await message.channel.send('Hello!')
-#        await message.channel.send(message.author.nick)
-#        await client.send_message(message.author, "LOL")
-
-#    if message.conent.startswith('$updates'):
-#        reply = message.author.nick
-#        await messages.channel.send('@')
-
-#@client.event
-#async def on_member_join(member):
-#    await member.create_dm()
-#    await member.dm_channel.send(f'Hi {member.name}, welcome to my Discord server!')
