@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>f90e0cee-8d2a-4a14-b03d-fb0fe886f24f</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>InfroBot.py</StartupFile>
+    <StartupFile>bot.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -21,7 +21,63 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="InfroBot.py" />
+    <Compile Include="db\models.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="db\repo.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="db\__init__.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="faq\help.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="faq\packs.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="faq\updates.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="faq\__init__.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="games\cities\cities_chat.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="games\cities\cities_core.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="games\cities\cities_models.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="games\cities\__init__.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="bot.py" />
+    <Compile Include="games\__init__.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="timing\counter\smart_timer.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="timing\counter\__init__.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="timing\__init__.py">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="db\" />
+    <Folder Include="faq\" />
+    <Folder Include="games\" />
+    <Folder Include="games\cities\" />
+    <Folder Include="timing\" />
+    <Folder Include="timing\counter\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="db\bot.db" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
