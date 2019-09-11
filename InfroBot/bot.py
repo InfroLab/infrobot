@@ -13,13 +13,13 @@ from faq.help import main_help
 from faq.updates import main_updates
 
 #Packages for games initialization
-from games.cities.cities_core import cities_start
+from games.cities import Cities
 
 #Temp imports
 from db.repo import get_pack_items
 
 #Bot specific preferences
-BOT_TOKEN = 'NjE5Mjc4NjM5MTY2NTIxMzY1.XXRK_A.7-0riRjKAGs_FgXsjRGSU0p4X1s'
+BOT_TOKEN = 'NjE5Mjc4NjM5MTY2NTIxMzY1.XXgXQw.PfUBTU5yaoG8x6qksyTQrb3GykY'
 CMD_PREFIX = '!'
 logging.basicConfig(level=logging.INFO)
 
@@ -36,27 +36,33 @@ async def updates(ctx, *args):
 async def getupdate(ctx, arg1, arg2):
     await ctx.send("WIP")
 
-#@bot.command(name='packs')
-#async def packs(ctx):
-#    embeds = await getEmbedsList()
-#    for e in embeds:
-#        await ctx.send(e)
-
 @bot.command(name='packs')
 async def packs(ctx):
     list1 = await get_pack_items()
     await ctx.send(list1)
-@bot.command(name='h')
+
+@bot.command(alises=['info', 'about'])
 async def h(ctx):
     await ctx.send(main_help())
 
 @bot.command(name='games')
 async def games(ctx, *args):
     if len(args) == 0:
-        await ctx.send("Type !games {game_name} to start the game. There are currently following games:")
+        await ctx.send("**Type !games {game_name} to start the game. There are currently following games:**")
         await ctx.send("```1. cities```")
     if len(args)== 1:
-        await cities_start(ctx)
+        cities_game = Cities(ctx)
+        await cities_game.cities_start()
 
+@bot.command(name='citiesjoin')
+async def citiesjoin(ctx):
+    if ctx.author not in Cities.roster:
+        Cities.roster.append(ctx.author)
+    else:
+        await ctx.send("**You are already in lobby!**")
+
+@bot.command(name='city')
+async def city(ctx, arg):
+    await Cities.city_answer(arg, ctx)
 #Bot launch
 bot.run(BOT_TOKEN)

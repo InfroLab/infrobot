@@ -42,16 +42,7 @@
     <Compile Include="faq\__init__.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="games\cities\cities_chat.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="games\cities\cities_core.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="games\cities\cities_models.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="games\cities\__init__.py">
+    <Compile Include="games\cities.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="bot.py" />
@@ -72,7 +63,6 @@
     <Folder Include="db\" />
     <Folder Include="faq\" />
     <Folder Include="games\" />
-    <Folder Include="games\cities\" />
     <Folder Include="timing\" />
     <Folder Include="timing\counter\" />
   </ItemGroup>
