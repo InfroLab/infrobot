@@ -4,10 +4,19 @@ from discord.ext import commands
 import logging
 import os
 
+#Retrieving bot token from separate gitignored file
+token_file = open('token.txt', 'r')
+BOT_TOKEN = token_file.read(59)
+token_file.close()
+
+#Retreiving creator id from separate gitignored file
+creator_file = open('creator.txt', 'r')
+CREATOR_ID = creator_file.read(18)
+creator_file.close()
+
 #Bot specific preferences
-BOT_TOKEN = 'NjE5Mjc4NjM5MTY2NTIxMzY1.XXogfg.-PfC1J_ngHSneEgWSLYZRb5qZXY'
 CMD_PREFIX = '!'
-CREATOR_ID = 274692672298418178
+
 logging.basicConfig(level=logging.INFO)
 
 bot = commands.Bot(command_prefix=CMD_PREFIX)

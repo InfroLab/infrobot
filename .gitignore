@@ -3,6 +3,16 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+#Bot token file
+token.txt
+
+#Creator id file
+creator.txt
+
+#Database file
+bot.db
+
+
 # User-specific files
 *.rsuser
 *.suo
