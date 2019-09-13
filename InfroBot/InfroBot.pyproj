@@ -21,6 +21,21 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="cogs\updates.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="cogs\faq.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="cogs\games.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="cogs\moderation.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="cogs\stats.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="db\models.py">
       <SubType>Code</SubType>
     </Compile>
@@ -49,6 +64,12 @@
     <Compile Include="games\__init__.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="moderation\chat.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="moderation\__init__.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="timing\counter\smart_timer.py">
       <SubType>Code</SubType>
     </Compile>
@@ -60,9 +81,11 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="cogs\" />
     <Folder Include="db\" />
     <Folder Include="faq\" />
     <Folder Include="games\" />
+    <Folder Include="moderation\" />
     <Folder Include="timing\" />
     <Folder Include="timing\counter\" />
   </ItemGroup>

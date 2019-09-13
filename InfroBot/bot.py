@@ -1,68 +1,43 @@
-#Main package for discord bot
+#Important packages for discord bot
 import discord
-
-#Package for commands
 from discord.ext import commands
-
-#Logging package
 import logging
-
-#Packages for commands messages and embeds
-from faq.packs import getEmbedsList
-from faq.help import main_help
-from faq.updates import main_updates
-
-#Packages for games initialization
-from games.cities import Cities
-
-#Temp imports
-from db.repo import get_pack_items
+import os
 
 #Bot specific preferences
-BOT_TOKEN = 'NjE5Mjc4NjM5MTY2NTIxMzY1.XXgXQw.PfUBTU5yaoG8x6qksyTQrb3GykY'
+BOT_TOKEN = 'NjE5Mjc4NjM5MTY2NTIxMzY1.XXogfg.-PfC1J_ngHSneEgWSLYZRb5qZXY'
 CMD_PREFIX = '!'
+CREATOR_ID = 274692672298418178
 logging.basicConfig(level=logging.INFO)
 
 bot = commands.Bot(command_prefix=CMD_PREFIX)
 
-####################
-##Commands binding##
-####################
-@bot.command(name='updates')
-async def updates(ctx, *args):
-    await ctx.send(main_updates(args))
+########################
+##Important bot events##
+########################
+@bot.event
+async def on_ready():
+    print('Bot has successfully loaded and is ready for work.')
 
-@bot.command(name='getupdate')
-async def getupdate(ctx, arg1, arg2):
-    await ctx.send("WIP")
-
-@bot.command(name='packs')
-async def packs(ctx):
-    list1 = await get_pack_items()
-    await ctx.send(list1)
-
-@bot.command(alises=['info', 'about'])
-async def h(ctx):
-    await ctx.send(main_help())
-
-@bot.command(name='games')
-async def games(ctx, *args):
-    if len(args) == 0:
-        await ctx.send("**Type !games {game_name} to start the game. There are currently following games:**")
-        await ctx.send("```1. cities```")
-    if len(args)== 1:
-        cities_game = Cities(ctx)
-        await cities_game.cities_start()
-
-@bot.command(name='citiesjoin')
-async def citiesjoin(ctx):
-    if ctx.author not in Cities.roster:
-        Cities.roster.append(ctx.author)
+@bot.command(name='load_cog')
+async def load_cog(ctx, extension):
+    if ctx.author.id == CREATOR_ID: 
+        await ctx.send(f"**Loaded {extension} extension**")
+        bot.load_extension(f'cogs.{extension}')
     else:
-        await ctx.send("**You are already in lobby!**")
+        await ctx.send(f"**You don't have permissios to use this command.**")
 
-@bot.command(name='city')
-async def city(ctx, arg):
-    await Cities.city_answer(arg, ctx)
+@bot.command(name='unload_cog')
+async def unload_cog(ctx, extension):
+    if ctx.author.id == CREATOR_ID:
+        await ctx.send(f"**Unloaded {extension} extension**")
+        bot.unload_extension(f'cogs.{extension}')
+    else:
+        await ctx.send(f"**You don't have permissios to use this command.**")
+
+for f in os.listdir('./cogs'):
+    if f.endswith('.py'):
+        bot.load_extension(f'cogs.{f[:-3]}')
+
 #Bot launch
 bot.run(BOT_TOKEN)

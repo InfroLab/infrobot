@@ -8,14 +8,13 @@ class Cities():
     is_preparing = False
     roster = []
     current_games = {}
-    async def __init__(self, ctx):
+    def __init__(self, ctx):
         self.context = ctx
         self.lobby = []
         Cities.roster.append(ctx.author)
         self.current_user = 0
         self.answer = ""
-        Cities.roster.update(self.context.channel,self) #The dict will hold the channel where the game was inititated and the class instance
-        await cities_start()
+        Cities.current_games.update({self.context.channel: self}) #The dict will hold the channel where the game was inititated and the class instance
 
     async def cities_start(self):
         Cities.is_preparing = True
@@ -55,4 +54,5 @@ class Cities():
 
     @staticmethod
     async def city_answer(answer, ctx):
-        //soon
+        await ctx.send("WIP")
+        #soon

@@ -7,7 +7,7 @@ from db.repo import get_pack_items
 from db.models import Pack
 
 #Create an embed object of a pack
-async def packEmbed(author, author_image, image, thumb, name, link, short_desc, desc):
+async def pack_embed(author, author_image, image, thumb, name, link, short_desc, desc):
     embed = discord.Embed(
             title = name,
             description = short_desc,
@@ -23,9 +23,9 @@ async def packEmbed(author, author_image, image, thumb, name, link, short_desc, 
     return embed
 
 #Return the list of packs embeds
-async def getEmbedsList():
+async def get_embeds_list():
     embeds_list = []
     packs = await get_pack_items()
     for p in packs:
-        embeds_list.append(await packEmbed(p.author, p.author_image, p.image, p.thumb, p.name, p.link, p.short_desc, p.desc))
+        embeds_list.append(await pack_embed(p.author, p.author_image, p.image, p.thumb, p.name, p.link, p.short_desc, p.desc))
     return embeds_list
