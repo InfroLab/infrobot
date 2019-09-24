@@ -21,11 +21,12 @@ logging.basicConfig(level=logging.INFO)
 
 bot = commands.Bot(command_prefix=CMD_PREFIX)
 
-########################
-##Important bot events##
-########################
+"""
+Important bot events and commands
+"""
 @bot.event
 async def on_ready():
+    await bot.change_presence(status=discord.Status.online, activity=discord.Game(name="Don't thread on me."))
     print('Bot has successfully loaded and is ready for work.')
 
 @bot.command(name='load_cog')
@@ -44,6 +45,7 @@ async def unload_cog(ctx, extension):
     else:
         await ctx.send(f"**You don't have permissios to use this command.**")
 
+#Loading cogs
 for f in os.listdir('./cogs'):
     if f.endswith('.py'):
         bot.load_extension(f'cogs.{f[:-3]}')

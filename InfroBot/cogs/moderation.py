@@ -7,10 +7,17 @@ class Moderation(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-
+    
     @commands.command(name='clear')
+    @commands.has_permissions(manage_messages=True)
     async def clear(self, ctx, num):
         await chat.clear_messages(ctx, int(num))
+
+    @clear.error
+    async def clear_error(self, error, ctx):
+        if isinstance(error, commands.CheckFailure):
+            #TO-DO Fix this message not beeing sended
+            await ctx.send("Looks like you don't have the perm.")
 
     @commands.command(name='kick')
     async def kick(self, ctx, member : discord.Member, *, reason=None):
