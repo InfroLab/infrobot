@@ -79,7 +79,7 @@ class Moderation(commands.Cog):
     @commands.bot_has_permissions(manage_roles=True)
     async def mute(self, ctx, member : discord.Member, *, reason=None):
         roles = ctx.guild.roles
-        text_channel = ctx.guild.channel
+        text_channel = ctx.channel
         mute_role = None
         
         #Looking for for given role
@@ -87,6 +87,7 @@ class Moderation(commands.Cog):
             if r.name == "Mute" and r.permissions.send_messages == False :
                 mute_role = r
                 break
+
         #If the role wasn't found, it will be created
         if mute_role == None:
             mute_permission = discord.Permissions()
@@ -94,7 +95,7 @@ class Moderation(commands.Cog):
             mute_role = await ctx.guild.create_role(name='Mute', permissions=mute_permission)
         
         #Set the given role to a member
-        await text_channel.set_permissions(mute_role, send_messages == False)
+        await text_channel.set_permissions(mute_role, send_messages = False)
         await member.add_roles(mute_role, reason=reason)
 
         #Output info message
