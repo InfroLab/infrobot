@@ -23,9 +23,9 @@ def pack_embed(author, author_image, image, thumb, name, link, short_desc, desc)
     return embed
 
 #Return the list of packs embeds
-def get_embeds_list():
+async def get_embeds_list():
     embeds_list = []
-    packs = get_pack_items()
+    packs = await get_pack_items()
     for p in packs:
         embeds_list.append(pack_embed(*p[1:]))
     return embeds_list

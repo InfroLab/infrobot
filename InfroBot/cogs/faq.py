@@ -12,7 +12,7 @@ class Faq(commands.Cog):
 
     @commands.command(name='packs')
     async def packs(self, ctx):
-        embeds = packs.get_embeds_list()
+        embeds = await packs.get_embeds_list()
         for e in embeds:
             await ctx.send(embed=e)
 
