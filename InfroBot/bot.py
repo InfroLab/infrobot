@@ -21,14 +21,13 @@ logging.basicConfig(level=logging.INFO)
 
 bot = commands.Bot(command_prefix=CMD_PREFIX)
 
-"""
-Important bot events and commands
-"""
+#Bot loaded notification
 @bot.event
 async def on_ready():
     await bot.change_presence(status=discord.Status.online, activity=discord.Game(name="Don't thread on me."))
     print('Bot has successfully loaded and is ready for work.')
 
+#Cog load command available only to the creator    
 @bot.command(name='load_cog')
 async def load_cog(ctx, extension):
     if ctx.author.id == CREATOR_ID: 
@@ -37,6 +36,7 @@ async def load_cog(ctx, extension):
     else:
         await ctx.send(f"**You don't have permissios to use this command.**")
 
+#Cog unload command available only to the creator 
 @bot.command(name='unload_cog')
 async def unload_cog(ctx, extension):
     if ctx.author.id == CREATOR_ID:

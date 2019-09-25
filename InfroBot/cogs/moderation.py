@@ -73,6 +73,39 @@ class Moderation(commands.Cog):
         if isinstance(error, commands.CheckFailure):
             #TO-DO Fix this message not beeing sended
             await ctx.send("Looks like you don't have the perm.")
+
+    @commands.command(name='mute')
+    @commands.has_permissions(mute_members=True)
+    @commands.bot_has_permissions(manage_roles=True)
+    async def mute(self, ctx, member : discord.Member, *, reason=None):
+        roles = ctx.guild.roles
+        mute_role = None
+        
+        for r in roles:
+            if r.name == "Mute" and r.permissions.send_messages == False :
+                mute_role = r
+                break
+
+        if mute_role == None:
+            mute_permission = discord.Permissions()
+            mute_permission.update(send_messages=False)
+            #mute_role = await ctx.guild.create_role(name='Mute', permissions=discord.Permissions.update(send_messages=False))
+            mute_role = await ctx.guild.create_role(name='Mute', permissions=mute_permission)
+
+        await member.add_roles(mute_role, reason=reason)
+
+        if reason == None:
+            await ctx.send(f"**{member.mention} was muted by {ctx.author}!**")
+        else:
+            await ctx.send(f"**{member.mention} was muted by {ctx.author} for:**")
+            await ctx.send(f"**{reason}**")
+
+    @mute.error
+    async def mute_error(self, error, ctx):
+        await ctx.send("Looks like you don't have the perm.")
+        if isinstance(error, commands.CheckFailure):
+            #TO-DO Fix this message not beeing sended
+            await ctx.send("Looks like you don't have the perm.")
             
 def setup(bot):
     bot.add_cog(Moderation(bot))
