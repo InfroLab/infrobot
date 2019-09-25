@@ -15,7 +15,7 @@ CREATOR_ID = creator_file.read(18)
 creator_file.close()
 
 #Bot specific preferences
-CMD_PREFIX = '!'
+CMD_PREFIX = "!"
 
 logging.basicConfig(level=logging.INFO)
 

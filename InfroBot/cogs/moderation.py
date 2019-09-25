@@ -14,7 +14,7 @@ class Moderation(commands.Cog):
         await chat.clear_messages(ctx, int(num))
 
     @clear.error
-    async def clear_error(self, error, ctx):
+    async def clear_error(self, ctx, eror):
         await ctx.send("Looks like you don't have the perm.")
         if isinstance(error, commands.CheckFailure):
             #TO-DO Fix this message not beeing sended
@@ -31,7 +31,7 @@ class Moderation(commands.Cog):
             await ctx.send(f"**User {member.mention} was kicked by {ctx.author.mention}**")
 
     @kick.error
-    async def kick_error(self, error, ctx):
+    async def kick_error(self, ctx, eror):
         await ctx.send("Looks like you don't have the perm.")
         if isinstance(error, commands.CheckFailure):
             #TO-DO Fix this message not beeing sended
@@ -48,7 +48,7 @@ class Moderation(commands.Cog):
             await ctx.send(f"**User {member.mention} was banned by {ctx.author.mention}**")
 
     @ban.error
-    async def ban_error(self, error, ctx):
+    async def ban_error(self, ctx, eror):
         await ctx.send("Looks like you don't have the perm.")
         if isinstance(error, commands.CheckFailure):
             #TO-DO Fix this message not beeing sended
@@ -63,22 +63,23 @@ class Moderation(commands.Cog):
             temp = row
             if row.user.mention == member:
                 await ctx.guild.unban(row.user)
-                await ctx.send(f"**{row.user.mention} was unbanned by {ctx.author}**")
+                await ctx.send(f"**{row.user.mention} was unbanned by {ctx.author.mention}**")
                 return
         await ctx.send(f"**{row.user.mention} was not found in banlist!**")
 
     @unban.error
-    async def ban_error(self, error, ctx):
+    async def ban_error(self, ctx, eror):
         await ctx.send("Looks like you don't have the perm.")
         if isinstance(error, commands.CheckFailure):
             #TO-DO Fix this message not beeing sended
             await ctx.send("Looks like you don't have the perm.")
 
     @commands.command(name='mute')
-    @commands.has_permissions(mute_members=True)
+    @commands.has_role("Mod")
     @commands.bot_has_permissions(manage_roles=True)
     async def mute(self, ctx, member : discord.Member, *, reason=None):
         roles = ctx.guild.roles
+        text_channel = ctx.guild.channel
         mute_role = None
         
         for r in roles:
@@ -89,23 +90,19 @@ class Moderation(commands.Cog):
         if mute_role == None:
             mute_permission = discord.Permissions()
             mute_permission.update(send_messages=False)
-            #mute_role = await ctx.guild.create_role(name='Mute', permissions=discord.Permissions.update(send_messages=False))
             mute_role = await ctx.guild.create_role(name='Mute', permissions=mute_permission)
 
         await member.add_roles(mute_role, reason=reason)
 
         if reason == None:
-            await ctx.send(f"**{member.mention} was muted by {ctx.author}!**")
+            await ctx.send(f"**{member.mention} was muted by {ctx.author.mention}!**")
         else:
-            await ctx.send(f"**{member.mention} was muted by {ctx.author} for:**")
+            await ctx.send(f"**{member.mention} was muted by {ctx.author.mention} for:**")
             await ctx.send(f"**{reason}**")
 
     @mute.error
-    async def mute_error(self, error, ctx):
+    async def mute_error(self, ctx, eror : commands.CheckFailure):
         await ctx.send("Looks like you don't have the perm.")
-        if isinstance(error, commands.CheckFailure):
-            #TO-DO Fix this message not beeing sended
-            await ctx.send("Looks like you don't have the perm.")
             
 def setup(bot):
     bot.add_cog(Moderation(bot))
