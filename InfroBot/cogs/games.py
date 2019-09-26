@@ -1,4 +1,5 @@
 import discord
+import geonamescache as geo
 from discord.ext import commands
 #Packages for games initialization
 from games.cities import Cities
@@ -26,7 +27,8 @@ class Games(commands.Cog):
 
     @commands.command(name='city')
     async def city(self, ctx, arg):
-        await Cities.city_answer(arg, ctx)
+        await Cities.city_answer(ctx, arg)
+
 
 def setup(bot):
     bot.add_cog(Games(bot))

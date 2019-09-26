@@ -107,7 +107,47 @@ class Moderation(commands.Cog):
 
     @mute.error
     async def mute_error(self, ctx, error : commands.CheckFailure):
-        await ctx.send("Looks like you don't have the perm.")
-            
+        if isinstance(error, commands.BotMissingPermissions):
+            await ctx.send("**I am missing 'Manage Roles' permissions!**")
+        elif isinstance(error, commands.MissingRole):
+            await ctx.send("**{ctx.author.mention} you don't have 'Mod' role!**")
+        
+    @commands.command(name='unmute')
+    @commands.has_role("Mod")
+    @commands.bot_has_permissions(manage_roles=True)
+    async def unmute(self, ctx, member : discord.Member, *, reason=None):
+        roles = ctx.guild.roles
+        text_channel = ctx.channel
+        mute_role = None
+        
+        #Looking for for given role
+        for r in roles:
+            if r.name == "Mute" and r.permissions.send_messages == False :
+                mute_role = r
+                break
+
+        #If the role wasn't found, it will be created
+        if mute_role == None:
+            mute_permission = discord.Permissions()
+            mute_permission.update(send_messages=False)
+            mute_role = await ctx.guild.create_role(name='Mute', permissions=mute_permission)
+        
+        #Removing role from member
+        await member.remove_roles(mute_role, reason=reason)
+
+        #Output info message
+        if reason == None:
+            await ctx.send(f"**{member.mention} was unmuted by {ctx.author.mention}!**")
+        else:
+            await ctx.send(f"**{member.mention} was unmuted by {ctx.author.mention} for:**")
+            await ctx.send(f"**{reason}**")
+
+    @unmute.error
+    async def unmute_error(self, ctx, error : commands.CheckFailure):
+        if isinstance(error, commands.BotMissingPermissions):
+            await ctx.send("**I am missing 'Manage Roles' permissions!**")
+        elif isinstance(error, commands.MissingRole):
+            await ctx.send("**{ctx.author.mention} you don't have 'Mod' role!**")
+
 def setup(bot):
     bot.add_cog(Moderation(bot))

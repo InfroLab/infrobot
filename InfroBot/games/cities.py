@@ -1,13 +1,13 @@
 import asyncio
-import geonamescache
+import geonamescache as geo
 #Package for timers necessary for game
 from timing.counter.smart_timer import countdown
 
 #class for hosting all the 'Cities' game on the server
 class Cities():
     is_preparing = False
-    roster = []
-    current_games = {}
+    roster = [] #List to hold current queue to the game
+    current_games = {} #key: channel value: Cities instance
     def __init__(self, ctx):
         self.context = ctx
         self.lobby = []
@@ -53,6 +53,11 @@ class Cities():
                 await self.city_waiter()
 
     @staticmethod
-    async def city_answer(answer, ctx):
-        await ctx.send("WIP")
-        #soon
+    async def city_answer(ctx, answer):
+        gc = geo.GeonamesCache()
+        guess = gc.get_cities_by_name(answer)
+        if len(guess) > 0:
+            game = current_games[ctx.channel]
+            game.answer = answer
+        else:
+            await ctx.send(f"**{ctx.author.mention}: you gave the wrong city name**")
