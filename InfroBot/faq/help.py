@@ -9,7 +9,8 @@ help_footer= ''
 help_msgs = [
     '!h - this help menu',
     '!updates - access to updates channels',
-    '!packs - list of available premium packs and bundles'
+    '!packs - list of available premium packs and bundles',
+    '!news - !news #text-channel Title|Text|Image_URL(optional) - send a news message in given #text-channel'
     ]
 
 def main_help():
