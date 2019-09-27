@@ -51,11 +51,11 @@ class Announcements(commands.Cog):
     async def news_error(self, ctx, error):
         if isinstance(error, commands.errors.BadArgument):
             await ctx.send("**Incorrect arguments used!**")
-        if isinstance(error, discord.Forbidden):
+        elif isinstance(error, discord.Forbidden):
             await ctx.send("**Incorrect usage of !news command!**")
-        if isinstance(error, commands.MissingPermissions):
+        elif isinstance(error, commands.MissingPermissions):
             await ctx.send("**The bot doesn't have a permissions to write messages in a given channel.**")
-        if isinstance(error, commands.MissingRole):
+        elif isinstance(error, commands.MissingRole):
             await ctx.send("**You don't have a 'Mod' role.**")
 
 def setup(bot):

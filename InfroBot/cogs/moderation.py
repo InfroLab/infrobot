@@ -9,18 +9,20 @@ class Moderation(commands.Cog):
         self.bot = bot
 
     @commands.command(name='clear')
+    @commands.has_role("Mod")
     @commands.has_permissions(manage_messages=True)
     async def clear(self, ctx, num):
         await chat.clear_messages(ctx, int(num))
 
     @clear.error
     async def clear_error(self, ctx, error):
-        await ctx.send("Looks like you don't have the perm.")
         if isinstance(error, commands.CheckFailure):
-            #TO-DO Fix this message not beeing sended
-            await ctx.send("Looks like you don't have the perm.")
+            await ctx.send("**Looks like you don't have Manage Messages permissions!**")
+        elif isinstance(error, commands.MissingRole):
+            await ctx.send("**{ctx.author.mention} you don't have 'Mod' role!**")
 
     @commands.command(name='kick')
+    @commands.has_role("Mod")
     @commands.has_permissions(kick_members=True)
     async def kick(self, ctx, member : discord.Member, *, reason=None):
         await member.kick(reason=reason)
@@ -32,12 +34,13 @@ class Moderation(commands.Cog):
 
     @kick.error
     async def kick_error(self, ctx, error):
-        await ctx.send("Looks like you don't have the perm.")
         if isinstance(error, commands.CheckFailure):
-            #TO-DO Fix this message not beeing sended
-            await ctx.send("Looks like you don't have the perm.")
+            await ctx.send("**Looks like you don't have Kick Members permissions!**")
+        elif isinstance(error, commands.MissingRole):
+            await ctx.send("**{ctx.author.mention} you don't have 'Mod' role!**")
 
     @commands.command(name='ban')
+    @commands.has_role("Mod")
     @commands.has_permissions(ban_members=True)
     async def ban(self, ctx, member : discord.Member, *, reason=None):
         await member.ban(reason=reason)
@@ -49,12 +52,13 @@ class Moderation(commands.Cog):
 
     @ban.error
     async def ban_error(self, ctx, error):
-        await ctx.send("Looks like you don't have the perm.")
         if isinstance(error, commands.CheckFailure):
-            #TO-DO Fix this message not beeing sended
-            await ctx.send("Looks like you don't have the perm.")
+            await ctx.send("**Looks like you don't have Ban Members permissions!**")
+        elif isinstance(error, commands.MissingRole):
+            await ctx.send("**{ctx.author.mention} you don't have 'Mod' role!**")
 
     @commands.command(name='unban')
+    @commands.has_role("Mod")
     @commands.has_permissions(ban_members=True)
     async def unban(self, ctx, *, member):
         ban_list = await ctx.guild.bans()
@@ -69,10 +73,10 @@ class Moderation(commands.Cog):
 
     @unban.error
     async def ban_error(self, ctx, error):
-        await ctx.send("Looks like you don't have the perm.")
         if isinstance(error, commands.CheckFailure):
-            #TO-DO Fix this message not beeing sended
-            await ctx.send("Looks like you don't have the perm.")
+            await ctx.send("**Looks like you don't have Ban Memberspermissions!**")
+        elif isinstance(error, commands.MissingRole):
+            await ctx.send("**{ctx.author.mention} you don't have 'Mod' role!**")
 
     @commands.command(name='mute')
     @commands.has_role("Mod")
