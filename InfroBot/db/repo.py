@@ -18,7 +18,7 @@ async def get_pack_items():
     packs = []
     path = get_db_path()
     async with aiosqlite.connect(path) as db:
-        async with db.execute('SELECT * FROM packs') as cursor: #TO-DO Removed id selecting
+        async with db.execute('SELECT author, author_image, image, thumb, name, link, short_desc, desc FROM packs') as cursor: #TO-DO Removed id selecting
             async for row in cursor:
                 packs.append(row)
     return packs
@@ -59,8 +59,10 @@ async def add_message(message):
     #Checking if the message content is empty
     if text == None:
         text = 'NULL'
+    else:
+        text = text.replace("'", "''")
         
-    insert_query = f"INSERT INTO '{guild_id}' VALUES ({id}, '{channel}', '{author}', '{text}')"
+    insert_query = f"INSERT INTO '{guild_id}' VALUES ({id}, '{channel}', '{author}', '{text}' )"
 
     async with aiosqlite.connect(path) as db:
         await db.execute(insert_query)

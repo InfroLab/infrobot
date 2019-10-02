@@ -48,13 +48,7 @@
     <Compile Include="db\__init__.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="faq\help.py">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="faq\packs.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="faq\updates.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="faq\__init__.py">
@@ -65,6 +59,15 @@
     </Compile>
     <Compile Include="bot.py" />
     <Compile Include="games\__init__.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="messages\announcements.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="messages\faq.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="messages\__init__.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="moderation\chat.py">
@@ -88,6 +91,7 @@
     <Folder Include="db\" />
     <Folder Include="faq\" />
     <Folder Include="games\" />
+    <Folder Include="messages\" />
     <Folder Include="moderation\" />
     <Folder Include="timing\" />
     <Folder Include="timing\counter\" />

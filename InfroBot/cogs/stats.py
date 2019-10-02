@@ -16,11 +16,6 @@ class Stats(commands.Cog):
     async def guild_join(self, guild):
         await repo.add_guild(guild)
 
-    @commands.Cog.listener(name='on_message')
-    async def guild_join(self, message):
-        await repo.add_message(message)
-        await self.bot.process_commands(message)
-
     @commands.command(name='stats')
     async def stats(self, ctx):
         await ctx.send("WIP")

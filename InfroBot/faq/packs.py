@@ -27,5 +27,5 @@ async def get_embeds_list():
     embeds_list = []
     packs = await get_pack_items()
     for p in packs:
-        embeds_list.append(pack_embed(*p[1:]))
+        embeds_list.append(pack_embed(*p))
     return embeds_list

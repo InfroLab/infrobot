@@ -1,8 +1,5 @@
 import discord
 from discord.ext import commands
-
-from faq.updates import main_updates
-
 class Updates(commands.Cog):
 
     def __init__(self, bot):
@@ -10,7 +7,7 @@ class Updates(commands.Cog):
 
     @commands.command(name='updates')
     async def updates(self, ctx, *args):
-        await ctx.send(main_updates(args))
+        await ctx.send("WIP")
 
     @commands.command(name='getupdate')
     async def getupdate(self, ctx, arg1, arg2):

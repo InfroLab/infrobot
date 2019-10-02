@@ -1,6 +1,7 @@
 #Important packages for discord bot
 import discord
 from discord.ext import commands
+from db import repo
 import logging
 import os
 
@@ -28,7 +29,7 @@ async def on_ready():
     print('Bot has successfully loaded and is ready for work.')
 
 #Cog load command available only to the creator    
-@bot.command(name='load_cog')
+@bot.command(name='load_cog', hidden=True)
 async def load_cog(ctx, extension):
     if ctx.author.id == CREATOR_ID: 
         await ctx.send(f"**Loaded {extension} extension**")
@@ -37,7 +38,7 @@ async def load_cog(ctx, extension):
         await ctx.send(f"**You don't have permissios to use this command.**")
 
 #Cog unload command available only to the creator 
-@bot.command(name='unload_cog')
+@bot.command(name='unload_cog', hidden=True)
 async def unload_cog(ctx, extension):
     if ctx.author.id == CREATOR_ID:
         await ctx.send(f"**Unloaded {extension} extension**")
@@ -49,6 +50,12 @@ async def unload_cog(ctx, extension):
 for f in os.listdir('./cogs'):
     if f.endswith('.py'):
         bot.load_extension(f'cogs.{f[:-3]}')
+
+#Stats collecting
+@bot.event
+async def on_message(message):
+    await repo.add_message(message)
+    await bot.process_commands(message)
 
 #Bot launch
 bot.run(BOT_TOKEN)

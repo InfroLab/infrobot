@@ -1,13 +1,14 @@
 import discord
 from validator_collection import checkers
 from discord.ext import commands
+from messages.announcements import news_args
 
 class Announcements(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name='news')
+    @commands.command(name='news', brief=news_args['brief'], help=news_args['help'], description=news_args['description'], usage=news_args['usage'])
     @commands.has_role("Mod")
     async def news(self, ctx, channel : discord.TextChannel, *, args):
         #Delete the message that called the command
