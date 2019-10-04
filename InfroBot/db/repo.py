@@ -67,3 +67,7 @@ async def add_message(message):
     async with aiosqlite.connect(path) as db:
         await db.execute(insert_query)
         await db.commit()
+
+#Add new publication
+async def add_publication(channel, title, text,  time):#TO-DO
+    pass

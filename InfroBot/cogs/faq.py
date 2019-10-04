@@ -60,7 +60,6 @@ class InfraysHelpCommand(commands.DefaultHelpCommand):
             if key != None:
                 help_message = help_message + commands_block(key, mapping)
 
-        #await ctx.send(note+help_message)
         await ctx.send(note+help_message)
 
     async def send_command_help(self, command):

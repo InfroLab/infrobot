@@ -153,5 +153,19 @@ class Moderation(commands.Cog):
         elif isinstance(error, commands.MissingRole):
             await ctx.send("**{ctx.author.mention} you don't have 'Mod' role!**")
 
+    @commands.command(name='invite')
+    @commands.has_role("Mod")
+    @commands.bot_has_permissions(create_instant_invite=True)
+    async def invite(self, ctx, age, uses):
+        invite = await ctx.channel.create_invite(max_age=age, max_uses=uses)
+        await ctx.send(f"**:link: Invite link created: {invite.url} :link:**")
+
+    @invite.error
+    async def unmute_error(self, ctx, error : commands.CheckFailure):
+        if isinstance(error, commands.BotMissingPermissions):
+            await ctx.send("**I am missing 'Manage Roles' permissions!**")
+        elif isinstance(error, commands.MissingRole):
+            await ctx.send("**{ctx.author.mention} you don't have 'Mod' role!**")
+
 def setup(bot):
     bot.add_cog(Moderation(bot))
