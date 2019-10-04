@@ -67,6 +67,9 @@
     <Compile Include="messages\faq.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="messages\moderation.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="messages\__init__.py">
       <SubType>Code</SubType>
     </Compile>

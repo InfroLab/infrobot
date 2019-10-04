@@ -81,8 +81,6 @@ class Announcements(commands.Cog):
         time = args_list[2]
         #repo.add_publication(channel, title, text,  time)
 
-
-
     @publication.error
     async def publication_error(self, ctx, error):
         if isinstance(error, commands.errors.BadArgument):

@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 #Moderation commands
 from moderation import chat
+from messages.moderation import invite_args
 
 class Moderation(commands.Cog):
 
@@ -153,19 +154,34 @@ class Moderation(commands.Cog):
         elif isinstance(error, commands.MissingRole):
             await ctx.send("**{ctx.author.mention} you don't have 'Mod' role!**")
 
-    @commands.command(name='invite')
+    @commands.command(name='invite', brief=invite_args['brief'], help=invite_args['help'], description=invite_args['description'], usage=invite_args['usage'])
     @commands.has_role("Mod")
     @commands.bot_has_permissions(create_instant_invite=True)
-    async def invite(self, ctx, age, uses):
-        invite = await ctx.channel.create_invite(max_age=age, max_uses=uses)
+    async def invite(self, ctx, age="0", uses=0):
+        age_dict ={
+            "0" : 0,
+            "30m" : 1800,
+            "1h" : 3600,
+            "6h" : 21600,
+            "12h" : 43200,
+            "1d" : 86400
+        }
+
+        time = age_dict[age]
+
+        invite = await ctx.channel.create_invite(max_age=time, max_uses=uses)
         await ctx.send(f"**:link: Invite link created: {invite.url} :link:**")
 
     @invite.error
-    async def unmute_error(self, ctx, error : commands.CheckFailure):
-        if isinstance(error, commands.BotMissingPermissions):
-            await ctx.send("**I am missing 'Manage Roles' permissions!**")
+    async def invite_error(self, ctx, error):
+        if isinstance(error, commands.errors.BadArgument):
+            await ctx.send("**:x: Incorrect arguments used! :x:**")
+        elif isinstance(error, commands.BotMissingPermissions):
+            await ctx.send("**:x: I am missing 'Create Instant Invite' permissions! :x:**")
         elif isinstance(error, commands.MissingRole):
-            await ctx.send("**{ctx.author.mention} you don't have 'Mod' role!**")
+            await ctx.send("**:x: {ctx.author.mention} you don't have 'Mod' role! :x:**")
+        elif isinstance(error.original, KeyError):
+            await ctx.send("**:x: Invalid time parameter given. Use one of the following: *0, 30m, 1h, 6h, 12h, 1d*. :x:**")
 
 def setup(bot):
     bot.add_cog(Moderation(bot))
