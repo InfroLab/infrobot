@@ -35,7 +35,7 @@ async def add_guild(guild):
     last_toggle = f"'{last_toggle}'"
  
     messages_query = f"CREATE TABLE '{guild.id}' (id INTEGER PRIMARY KEY UNIQUE, channel_name TEXT NOT NULL, author TEXT NOT NULL, message TEXT)"
-    guilds_query = f'INSERT INTO guilds VALUES ({guild.id}, {guild.member_count}, {guild.owner.id}, {t_channels_cnt}, {v_channels_cnt}, {bans_cnt}, {msgs_cnt}, {is_stat_on}, {last_toggle})'
+    guilds_query = f'INSERT INTO guilds VALUES ({guild.id}, {guild.member_count}, {guild.owner.id}, {t_channels_cnt}, {v_channels_cnt}, {bans_cnt}, {msgs_cnt}, {is_stat_on}, {last_toggle}, DEFAULT, DEFAULT)'
 
     async with aiosqlite.connect(path) as db:
         await db.execute(guilds_query)
@@ -62,12 +62,39 @@ async def add_message(message):
     else:
         text = text.replace("'", "''")
         
-    insert_query = f"INSERT INTO '{guild_id}' VALUES ({id}, '{channel}', '{author}', '{text}' )"
+    insert_query = f"INSERT INTO '{guild_id}' VALUES ({id}, '{channel}', '{author}', '{text}')"
 
     async with aiosqlite.connect(path) as db:
         await db.execute(insert_query)
         await db.commit()
 
+#Set welcome message
+async def set_welcome_message(guild_id, channel_id, args):
+    path = get_db_path()
+    guild_id = message.guild.id
+
+    if args.find('%user%') == -1:
+        args = '%user%' + args
+    args = args.replace("'", "''")
+
+    update_query = f"UPDATE guilds welcome_message = 'args', welcome_channel = channel_id WHERE guild_id={guild_id}"
+
+    async with aiosqlite.connect(path) as db:
+        await db.execute(update_query)
+        await db.commit()
+#Get welcome message
+async def get_welcome_message(guild_id):
+    path = get_db_path()
+
+    select_query = f"SELECT welcome_message, welcome_channel FROM guilds WHERE guild_id = {guild_id}"
+
+    async with aiosqlite.connect(path) as db:
+        db.row_factory = aiosqlite.Row
+        async with db.execute(select_query) as cursor:
+            message = row['welcome_message']
+            channe_id = row['welcome_channel']
+
+    return message, channel_id
 #Add new publication
 async def add_publication(channel, title, text,  time):#TO-DO
     pass
