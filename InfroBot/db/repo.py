@@ -2,6 +2,7 @@ import aiosqlite
 import sys
 import os
 import datetime
+from messages.locales import locales
 
 #Returns the db path depending on OS
 def get_db_path():
@@ -13,12 +14,29 @@ def get_db_path():
 
     return path
 
+#Return servers locales
+async def get_server_locales():
+    locales = {}
+    path = get_db_path()
+
+    select_query = 'SELECT guild_id, locale FROM guilds'
+
+    async with aiosqlite.connect(path) as db:
+        async with db.execute(select_query) as cursor:
+            async for row in cursor:
+                locales.update({int(row[0]): row[1]})
+
+    return locales
+
 #Returns the list of Pack objects
 async def get_pack_items():
     packs = []
     path = get_db_path()
+
+    select_query = 'SELECT author, author_image, image, thumb, name, link, short_desc, desc FROM packs'
+
     async with aiosqlite.connect(path) as db:
-        async with db.execute('SELECT author, author_image, image, thumb, name, link, short_desc, desc FROM packs') as cursor: #TO-DO Removed id selecting
+        async with db.execute(select_query) as cursor:
             async for row in cursor:
                 packs.append(row)
     return packs
@@ -35,7 +53,7 @@ async def add_guild(guild):
     last_toggle = f"'{last_toggle}'"
  
     messages_query = f"CREATE TABLE '{guild.id}' (id INTEGER PRIMARY KEY UNIQUE, channel_name TEXT NOT NULL, author TEXT NOT NULL, message TEXT)"
-    guilds_query = f'INSERT INTO guilds VALUES ({guild.id}, {guild.member_count}, {guild.owner.id}, {t_channels_cnt}, {v_channels_cnt}, {bans_cnt}, {msgs_cnt}, {is_stat_on}, {last_toggle}, DEFAULT, DEFAULT)'
+    guilds_query = f'INSERT INTO guilds VALUES ({guild.id}, {guild.member_count}, {guild.owner.id}, {t_channels_cnt}, {v_channels_cnt}, {bans_cnt}, {msgs_cnt}, {is_stat_on}, {last_toggle}, DEFAULT, DEFAULT, DEFAULT)'
 
     async with aiosqlite.connect(path) as db:
         await db.execute(guilds_query)
@@ -71,17 +89,17 @@ async def add_message(message):
 #Set welcome message
 async def set_welcome_message(guild_id, channel_id, args):
     path = get_db_path()
-    guild_id = message.guild.id
 
     if args.find('%user%') == -1:
         args = '%user%' + args
     args = args.replace("'", "''")
 
-    update_query = f"UPDATE guilds welcome_message = 'args', welcome_channel = channel_id WHERE guild_id={guild_id}"
+    update_query = f"UPDATE guilds SET welcome_message = '{args}', welcome_channel = {channel_id} WHERE guild_id={guild_id}"
 
     async with aiosqlite.connect(path) as db:
         await db.execute(update_query)
         await db.commit()
+
 #Get welcome message
 async def get_welcome_message(guild_id):
     path = get_db_path()
@@ -98,3 +116,24 @@ async def get_welcome_message(guild_id):
 #Add new publication
 async def add_publication(channel, title, text,  time):#TO-DO
     pass
+
+#Set guild locale
+async def set_guild_locale(guild_id, locale):
+    path = get_db_path()
+
+    update_query = f"UPDATE guilds SET locale='{locale}' WHERE guild_id={guild_id}"
+
+    async with aiosqlite.connect(path) as db:
+        await db.execute(update_query)
+        await db.commit()
+
+#Get guild locale
+async def get_guild_locale(guild_id):
+    path = get_db_path()
+
+    select_query = f"SELECT locale FROM guilds WHERE guild_id={guild_id}"
+
+    async with aiosqlite.connect(path) as db:
+        async with db.execute(select_query) as cursor:
+            async for row in cursor:
+                return row[0]

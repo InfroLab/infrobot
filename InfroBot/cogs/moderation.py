@@ -8,7 +8,10 @@ class Moderation(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-
+    
+    #
+    # CLEAR COMMAND
+    #
     @commands.command(name='clear')
     @commands.has_role("Mod")
     @commands.has_permissions(manage_messages=True)
@@ -21,7 +24,10 @@ class Moderation(commands.Cog):
             await ctx.send("**Looks like you don't have Manage Messages permissions!**")
         elif isinstance(error, commands.MissingRole):
             await ctx.send("**{ctx.author.mention} you don't have 'Mod' role!**")
-
+    
+    #
+    # KICK COMMAND
+    #
     @commands.command(name='kick')
     @commands.has_role("Mod")
     @commands.has_permissions(kick_members=True)
@@ -40,6 +46,9 @@ class Moderation(commands.Cog):
         elif isinstance(error, commands.MissingRole):
             await ctx.send("**{ctx.author.mention} you don't have 'Mod' role!**")
 
+    #
+    # BAN COMMAND
+    #
     @commands.command(name='ban')
     @commands.has_role("Mod")
     @commands.has_permissions(ban_members=True)
@@ -58,6 +67,9 @@ class Moderation(commands.Cog):
         elif isinstance(error, commands.MissingRole):
             await ctx.send("**{ctx.author.mention} you don't have 'Mod' role!**")
 
+    #
+    # UNBAN COMMAND
+    #
     @commands.command(name='unban')
     @commands.has_role("Mod")
     @commands.has_permissions(ban_members=True)
@@ -78,7 +90,10 @@ class Moderation(commands.Cog):
             await ctx.send("**Looks like you don't have Ban Memberspermissions!**")
         elif isinstance(error, commands.MissingRole):
             await ctx.send("**{ctx.author.mention} you don't have 'Mod' role!**")
-
+    
+    #
+    # MUTE COMMAND
+    #
     @commands.command(name='mute')
     @commands.has_role("Mod")
     @commands.bot_has_permissions(manage_roles=True)
@@ -117,6 +132,9 @@ class Moderation(commands.Cog):
         elif isinstance(error, commands.MissingRole):
             await ctx.send("**{ctx.author.mention} you don't have 'Mod' role!**")
         
+    #
+    # UNMUTE COMMAND
+    #
     @commands.command(name='unmute')
     @commands.has_role("Mod")
     @commands.bot_has_permissions(manage_roles=True)
@@ -154,6 +172,9 @@ class Moderation(commands.Cog):
         elif isinstance(error, commands.MissingRole):
             await ctx.send("**{ctx.author.mention} you don't have 'Mod' role!**")
 
+    #
+    # INVITE COMMAND
+    #
     @commands.command(name='invite', brief=invite_args['brief'], help=invite_args['help'], description=invite_args['description'], usage=invite_args['usage'])
     @commands.has_role("Mod")
     @commands.bot_has_permissions(create_instant_invite=True)

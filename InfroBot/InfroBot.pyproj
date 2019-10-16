@@ -21,6 +21,9 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="cogs\administration.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="cogs\announcements.py">
       <SubType>Code</SubType>
     </Compile>
@@ -65,6 +68,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="messages\faq.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="messages\locales.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="messages\moderation.py">

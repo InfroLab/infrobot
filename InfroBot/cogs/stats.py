@@ -20,8 +20,8 @@ class Stats(commands.Cog):
     async def stats(self, ctx):
         await ctx.send("WIP")
 
-    @commands.command(name='supstat')
-    async def supstat(self, ctx):
+    @commands.command(name='addstat')
+    async def addstat(self, ctx):
         await repo.add_guild(ctx.guild)
 
 def setup(bot):

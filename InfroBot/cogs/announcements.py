@@ -60,7 +60,7 @@ class Announcements(commands.Cog):
         elif isinstance(error, commands.MissingRole):
             await ctx.send("**You don't have a 'Mod' role.**")
 
-    @commands.command(name='bcast', brief=bcast_args['brief'], help=bcast_args['help'], description=bcast_args['description'], usage=bcast_args['usage'])
+    @commands.command(name='publication', brief=bcast_args['brief'], help=bcast_args['help'], description=bcast_args['description'], usage=bcast_args['usage'])
     @commands.has_role("Mod")
     async def publication(self, ctx, channel : discord.TextChannel, *, args):
         #Delete the message that called the command
@@ -93,7 +93,7 @@ class Announcements(commands.Cog):
             await ctx.send("**You don't have a 'Mod' role.**")
 
     @commands.command(name='welcome', brief=welcome_args['brief'], help=welcome_args['help'], description=welcome_args['description'], usage=welcome_args['usage'])
-    @commands.has_permissions(administrator=true)
+    @commands.has_permissions(administrator=True)
     async def welcome(self, ctx, channel : discord.TextChannel, *, args):
         #Validation of parameters
         if not isinstance(channel, discord.TextChannel):
