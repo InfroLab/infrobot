@@ -53,7 +53,7 @@ async def add_guild(guild):
     last_toggle = f"'{last_toggle}'"
  
     messages_query = f"CREATE TABLE '{guild.id}' (id INTEGER PRIMARY KEY UNIQUE, channel_name TEXT NOT NULL, author TEXT NOT NULL, message TEXT)"
-    guilds_query = f'INSERT INTO guilds VALUES ({guild.id}, {guild.member_count}, {guild.owner.id}, {t_channels_cnt}, {v_channels_cnt}, {bans_cnt}, {msgs_cnt}, {is_stat_on}, {last_toggle}, DEFAULT, DEFAULT, DEFAULT)'
+    guilds_query = f'INSERT INTO guilds (guild_id, total_users, admin_id, total_t_channels, total_v_channels, total_banned, total_messages, is_stat_on, last_toggle) VALUES ({guild.id}, {guild.member_count}, {guild.owner.id}, {t_channels_cnt}, {v_channels_cnt}, {bans_cnt}, {msgs_cnt}, {is_stat_on}, {last_toggle})'
 
     async with aiosqlite.connect(path) as db:
         await db.execute(guilds_query)
