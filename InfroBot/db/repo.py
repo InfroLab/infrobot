@@ -109,8 +109,9 @@ async def get_welcome_message(guild_id):
     async with aiosqlite.connect(path) as db:
         db.row_factory = aiosqlite.Row
         async with db.execute(select_query) as cursor:
-            message = row['welcome_message']
-            channe_id = row['welcome_channel']
+            async for row in cursor:
+                message = row['welcome_message']
+                channel_id = row['welcome_channel']
 
     return message, channel_id
 #Add new publication
@@ -137,3 +138,13 @@ async def get_guild_locale(guild_id):
         async with db.execute(select_query) as cursor:
             async for row in cursor:
                 return row[0]
+
+#Add publication
+async def add_publication(guild_id, channel, title, text, time):
+    path = get_db_path()
+
+    update_query = f"UPDATE guilds SET post_channel = {channel}, post_title = '{title}', post_text = '{text}', post_time = '{time}' WHERE guild_id={guild_id}"
+
+    async with aiosqlite.connect(path) as db:
+        await db.execute(update_query)
+        await db.commit()

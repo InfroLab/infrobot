@@ -20,4 +20,4 @@ welcome_args = {
             'brief' : 'Set server welcome message.',
             'help' : 'Type !welcome <#channel_name> <message>',
             'description' : "Command to set server welcome message with given text and channel. You can use %user% placeholder in text. If you want to remove welcome message, set text to %none%.",
-            'usage' : '!pulication #welcome Hey, %user%. Nice to meet you. Please head to #rules channel and read the entire server rules.'}
+            'usage' : '!welcome #welcome Hey, %user%. Nice to meet you. Please head to #rules channel and read the entire server rules.'}

@@ -79,12 +79,6 @@
     <Compile Include="messages\__init__.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="moderation\chat.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="moderation\__init__.py">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="timing\counter\smart_timer.py">
       <SubType>Code</SubType>
     </Compile>
@@ -101,7 +95,6 @@
     <Folder Include="faq\" />
     <Folder Include="games\" />
     <Folder Include="messages\" />
-    <Folder Include="moderation\" />
     <Folder Include="timing\" />
     <Folder Include="timing\counter\" />
   </ItemGroup>

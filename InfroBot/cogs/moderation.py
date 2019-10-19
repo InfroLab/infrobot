@@ -1,8 +1,8 @@
 import discord
 from discord.ext import commands
 #Moderation commands
-from moderation import chat
 from messages.moderation import invite_args
+from messages.locales import clear_locale, kick_locale
 
 class Moderation(commands.Cog):
 
@@ -16,14 +16,23 @@ class Moderation(commands.Cog):
     @commands.has_role("Mod")
     @commands.has_permissions(manage_messages=True)
     async def clear(self, ctx, num):
-        await chat.clear_messages(ctx, int(num))
+        #Getting server locale
+        lang = self.bot.locales[ctx.guild.id]
+
+        await ctx.channel.purge(limit=int(num)+1) #correction to include the command message
+        await ctx.send(content=clear_locale[lang]['removed_msg_start'] + f"{num}" + clear_locale[lang]['removed_msg_end'], delete_after=30)
 
     @clear.error
     async def clear_error(self, ctx, error):
+        #Getting server locale
+        lang = self.bot.locales[ctx.guild.id]
+        
         if isinstance(error, commands.CheckFailure):
-            await ctx.send("**Looks like you don't have Manage Messages permissions!**")
+            await ctx.send(clear_locale[lang]['no_manage_msgs_perms'])
         elif isinstance(error, commands.MissingRole):
-            await ctx.send("**{ctx.author.mention} you don't have 'Mod' role!**")
+            await ctx.send("**" + f"{ctx.author.mention}" + clear_locale[lang]['missing_role'])
+        elif isinstance(error, commands.MissingRequiredArgument):
+            await ctx.send(clear_locale[lang]['missing_arguments'])
     
     #
     # KICK COMMAND
@@ -32,19 +41,26 @@ class Moderation(commands.Cog):
     @commands.has_role("Mod")
     @commands.has_permissions(kick_members=True)
     async def kick(self, ctx, member : discord.Member, *, reason=None):
+        #Getting server locale
+        lang = self.bot.locales[ctx.guild.id]
+
         await member.kick(reason=reason)
         if reason != None:
-            await ctx.send(f"**User {member.mention} was kicked by {ctx.author.mention} for:**")
-            await ctx.send(f"*{reason}*")
+            await ctx.send(f"**{member.mention}" + kick_locale[lang]['kicked_by'] + f"{ctx.author.mention}" + kick_locale[lang]['for'] + f"*{reason}***")
         else:
-            await ctx.send(f"**User {member.mention} was kicked by {ctx.author.mention}**")
+            await ctx.send(f"**{member.mention}" + kick_locale[lang]['kicked_by'] + f"{ctx.author.mention}" + "**")
 
     @kick.error
     async def kick_error(self, ctx, error):
+        #Getting server locale
+        lang = self.bot.locales[ctx.guild.id]
+
         if isinstance(error, commands.CheckFailure):
-            await ctx.send("**Looks like you don't have Kick Members permissions!**")
+            await ctx.send(kick_locale[lang]['no_kick_perms'])
         elif isinstance(error, commands.MissingRole):
-            await ctx.send("**{ctx.author.mention} you don't have 'Mod' role!**")
+            await ctx.send(kick_locale[lang]['missing_role'])
+        elif isinstance(error, commands.MissingRequiredArgument):
+            await ctx.send(kick_locale[lang]['missing_arguments'])
 
     #
     # BAN COMMAND

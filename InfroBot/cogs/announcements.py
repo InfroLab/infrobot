@@ -3,6 +3,8 @@ from validator_collection import checkers
 from discord.ext import commands
 from db import repo
 from messages.locales import news_locale
+from datetime import datetime
+from datetime import timedelta
 from messages.announcements import news_args, bcast_args, welcome_args
 
 class Announcements(commands.Cog):
@@ -12,7 +14,7 @@ class Announcements(commands.Cog):
 
     @commands.command(name='news', brief=news_args['brief'], help=news_args['help'], description=news_args['description'], usage=news_args['usage'])
     @commands.has_role("Mod")
-    async def news(self, ctx, channel : discord.TextChannel, *, args):
+    async def news(self, ctx, channel: discord.TextChannel, *, args):
         #Getting server locale
         lang = self.bot.locales[ctx.guild.id]
 
@@ -69,7 +71,7 @@ class Announcements(commands.Cog):
 
     @commands.command(name='publication', brief=bcast_args['brief'], help=bcast_args['help'], description=bcast_args['description'], usage=bcast_args['usage'])
     @commands.has_role("Mod")
-    async def publication(self, ctx, channel : discord.TextChannel, *, args):
+    async def publication(self, ctx, channel: discord.TextChannel, *, args):
         #Delete the message that called the command
         await ctx.message.delete(delay=1)
 
@@ -86,7 +88,9 @@ class Announcements(commands.Cog):
         title = args_list[0]
         text = args_list[1]
         time = args_list[2]
-        #repo.add_publication(channel, title, text,  time)
+        time = datetime.now() + timedelta(minutes=int(time)) #Taking current time and adding the (time x minutes) 
+        time = time.strftime("%d/%m/%Y, %H:%M:%S")
+        await repo.add_publication(ctx.guild.id, channel.id, title, text, time)
 
     @publication.error
     async def publication_error(self, ctx, error):
@@ -101,7 +105,7 @@ class Announcements(commands.Cog):
 
     @commands.command(name='welcome', brief=welcome_args['brief'], help=welcome_args['help'], description=welcome_args['description'], usage=welcome_args['usage'])
     @commands.has_permissions(administrator=True)
-    async def welcome(self, ctx, channel : discord.TextChannel, *, args):
+    async def welcome(self, ctx, channel: discord.TextChannel, *, args):
         #Validation of parameters
         if not isinstance(channel, discord.TextChannel):
             await ctx.send("**You haven't specified the proper channel. Use #name-of-channel to pass the channel where you want to post the news**")
@@ -121,21 +125,20 @@ class Announcements(commands.Cog):
             await ctx.send("**You don't have a 'Mod' role.**")
 
     @commands.Cog.listener('on_member_join')
-    async def greeting(member):
+    async def greeting(self, member):
         guild = member.guild
-        message, channel_id = repo.get_welcome_message(guild.id)
+        message, channel_id = await repo.get_welcome_message(guild.id)
 
+        #Adding member mention, if the welcome message hasn't got placeholder
         message = message.replace("%user%",f"{member.mention}")
         if message == None:
             return
 
-        channel = get_channel(channel_id)
+        channel = guild.get_channel(channel_id)
         if channel == None:
             await member.send(message)
         else:
             await channel.send(message)
-
-
 
 def setup(bot):
     bot.add_cog(Announcements(bot))
