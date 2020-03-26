@@ -27,6 +27,9 @@
     <Compile Include="cogs\announcements.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="cogs\ticketing.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="cogs\updates.py">
       <SubType>Code</SubType>
     </Compile>

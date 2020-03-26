@@ -32,13 +32,13 @@ locale_locale = {
     'en':
     {
         'current_locale': "**Guild locale is ",
-        'new_locale': "**Locale was set to**",
+        'new_locale': "**Locale was set to ",
         'locale_not_found': "**Locale was not found.**",
     }, 
     'ru':
     {
         'current_locale': "**Текущая локализация сервера: ",
-        'new_locale': "**Локализация сервера установлена на**",
+        'new_locale': "**Локализация сервера установлена на ",
         'locale_not_found': "**Локализация не найдена.**",
     }
     }

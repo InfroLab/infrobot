@@ -23,7 +23,8 @@ class Administration(commands.Cog):
             if locales.count(locale) == 1:
                 await repo.set_guild_locale(ctx.guild.id, locale)
                 self.bot.locales.update({ctx.guild.id: locale})
-                await ctx.send(locale_locale[lang]['new_locale'] + f"** *{locale}*.**")
+                lang = locale
+                await ctx.send(locale_locale[lang]['new_locale'] + f"*{locale}*.**")
             else:
                 await ctx.send(locale_locale[lang]['locale_not_found'])
 def setup(bot):
