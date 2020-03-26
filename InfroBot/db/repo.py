@@ -148,3 +148,33 @@ async def add_publication(guild_id, channel, title, text, time):
     async with aiosqlite.connect(path) as db:
         await db.execute(update_query)
         await db.commit()
+
+#Get guides for guild with given query
+async def get_guild_guides(guild_id, query):
+    path = get_db_path()
+    query = query.replace('"','').replace("'","")
+
+    select_query = f"SELECT author, link, desc FROM guides WHERE guild_id = {guild_id} AND desc LIKE '%{query}%'"
+
+    guides = []
+    async with aiosqlite.connect(path) as db:
+        db.row_factory = aiosqlite.Row
+        async with db.execute(select_query) as cursor:
+            async for row in cursor:
+                guide = {}
+                guide['author'] = row['author']
+                guide['link'] = row['link']
+                guide['desc'] = row['desc']
+                guides.append(guide)
+
+    return guides
+
+# Add guild guide
+async def add_guild_guide(guild_id, link, desc, author):
+    path = get_db_path()
+
+    insert_query = f"INSERT INTO guides VALUES ({guild_id}, '{link}', '{desc}', '{author}')"
+
+    async with aiosqlite.connect(path) as db:
+        await db.execute(insert_query)
+        await db.commit()

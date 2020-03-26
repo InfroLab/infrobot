@@ -27,6 +27,7 @@
     <Compile Include="cogs\announcements.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="cogs\guides.py" />
     <Compile Include="cogs\ticketing.py">
       <SubType>Code</SubType>
     </Compile>
@@ -54,6 +55,8 @@
     <Compile Include="db\__init__.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="guides\guides.py" />
+    <Compile Include="guides\__init__.py" />
     <Compile Include="faq\packs.py">
       <SubType>Code</SubType>
     </Compile>
@@ -95,6 +98,7 @@
   <ItemGroup>
     <Folder Include="cogs\" />
     <Folder Include="db\" />
+    <Folder Include="guides\" />
     <Folder Include="faq\" />
     <Folder Include="games\" />
     <Folder Include="messages\" />
