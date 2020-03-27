@@ -14,16 +14,17 @@ async def get_guides_embed(guild, query):
         )
         embed.add_field(name='Результат', value='404 Not found', inline=False)
         return embed
-
-    embed = discord.Embed(
-            title = 'Результат запроса',
-            colour = discord.Color.green()
-        )
+    embeds = []
+    # Case for guide is not empty
     cnt = 1
     for g in guides:
-        embed.add_field(name=f'#{cnt}', value='--------------------', inline=False)
+        embed = discord.Embed(
+            title = g['title'],
+            description = g['desc'],
+            colour = discord.Color.green()
+        )
+        embed.add_field(name=f'#{cnt}', value='----------------------------------------', inline=False)
         embed.add_field(name='Автор', value=g['author'], inline=False)
-        embed.add_field(name='Ссылка', value=g['link'], inline=False)
-        embed.add_field(name='Описание', value=g['desc'], inline=False)
         cnt = cnt + 1
-    return embed
+        embeds.append(embed)
+    return embeds

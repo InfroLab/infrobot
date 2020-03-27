@@ -154,7 +154,7 @@ async def get_guild_guides(guild_id, query):
     path = get_db_path()
     query = query.replace('"','').replace("'","")
 
-    select_query = f"SELECT author, link, desc FROM guides WHERE guild_id = {guild_id} AND desc LIKE '%{query}%'"
+    select_query = f"SELECT author, title, desc FROM guides WHERE guild_id = {guild_id} AND (desc LIKE '%{query}%' OR title LIKE '%{query}%')"
 
     guides = []
     async with aiosqlite.connect(path) as db:
@@ -163,7 +163,7 @@ async def get_guild_guides(guild_id, query):
             async for row in cursor:
                 guide = {}
                 guide['author'] = row['author']
-                guide['link'] = row['link']
+                guide['title'] = row['title']
                 guide['desc'] = row['desc']
                 guides.append(guide)
 
