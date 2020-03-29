@@ -180,10 +180,10 @@ async def add_guild_guide(guild_id, link, desc, author):
         await db.commit()
 
 # Add guild event
-async def add_guild_event(message_id, guild_id, name, desc, date, duration, creator, subscribers, subscriptable):
+async def add_guild_event(message_id, channel_id, guild_id, name, desc, date, duration, creator, subscribers, subscriptable):
     path = get_db_path()
 
-    insert_query = f"INSERT INTO events VALUES ({message_id}, {guild_id}, '{name}', '{desc}', '{date}', {duration}, '{creator}', '{subscribers}', {subscriptable})"
+    insert_query = f"INSERT INTO events VALUES ({message_id}, {channel_id}, {guild_id}, '{name}', '{desc}', '{date}', {duration}, '{creator}', '{subscribers}', {subscriptable})"
 
     async with aiosqlite.connect(path) as db:
         await db.execute(insert_query)
@@ -224,13 +224,25 @@ async def add_event_subscriber(message_id, subscriber):
     else:
         subscribers = subscriber
 
-    update_query = f"UPDATE events SET subscribers={subscribers} WHERE message_id = {message_id}"
+    update_query = f"UPDATE events SET subscribers='{subscribers}' WHERE message_id = {message_id}"
 
     async with aiosqlite.connect(path) as db:
         await db.execute(update_query)
         await db.commit()
 
     return 'success'
+
+# Get event subscribers
+async def get_event_subscribers(message_id):
+    path = get_db_path()
+
+    select_query = f"SELECT subscribers FROM events WHERE message_id = {message_id}"
+
+    async with aiosqlite.connect(path) as db:
+        db.row_factory = aiosqlite.Row
+        async with db.execute(select_query) as cursor:
+            async for row in cursor:
+                return row['subscribers']
 
 # Remove event subscriber
 async def remove_event_subscriber(message_id, subscriber):
@@ -252,7 +264,7 @@ async def remove_event_subscriber(message_id, subscriber):
         subscribers.replace(','+subscriber, ',')
         subscribers.replace(subscriber, '')
 
-    update_query = f"UPDATE events SET subscribers={subscribers} WHERE message_id = {message_id}"
+    update_query = f"UPDATE events SET subscribers='{subscribers}' WHERE message_id = {message_id}"
 
     async with aiosqlite.connect(path) as db:
         await db.execute(update_query)
@@ -298,3 +310,17 @@ async def get_event_creator(message_id):
                 creator = row['creator']
     
     return creator
+
+# Get event channel id
+async def get_event_channel_id(message_id):
+    path = get_db_path()
+
+    select_query = f"SELECT channel_id FROM events WHERE message_id = {message_id}"
+
+    channel_id = 1
+    async with aiosqlite.connect(path) as db:
+        db.row_factory = aiosqlite.Row
+        async with db.execute(select_query) as cursor:
+            async for row in cursor:
+                channel_id = row['channel_id']
+            return channel_id
