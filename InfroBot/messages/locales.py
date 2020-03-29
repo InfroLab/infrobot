@@ -49,7 +49,7 @@ clear_locale = {
     {
         'removed_msg_start': "**:scissors: Messages removed: ",
         'removed_msg_end': " :scissors:**",
-        'no_manage_msgs_perms': "Looks like you don't have Manage Messages permissions!**",
+        'no_manage_msgs_perms': "**Looks like you don't have Manage Messages permissions!**",
         'missing_role': ", you don't have a 'Mod' role!**",
         'missing_arguments': "**Argument is not specified!**",
     }, 
@@ -57,7 +57,7 @@ clear_locale = {
     {
         'removed_msg_start': "**:scissors: Удалено сообщений: ",
         'removed_msg_end': " :scissors:**",
-        'no_manage_msgs_perms': "Похоже, что у вас нет прав, чтобы Управлять Сообщениями!**",
+        'no_manage_msgs_perms': "**Похоже, что у вас нет прав, чтобы Управлять Сообщениями!**",
         'missing_role': ", у вас нет роли 'Mod'!**",
         'missing_arguments': "**Не указан аргумент!**",
     }

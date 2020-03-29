@@ -16,6 +16,7 @@ class Guides(commands.Cog):
         if not query:
             query = ''
         embeds = await guides.get_guides_embed(ctx.guild.id, query)
+
         for e in embeds:
             await ctx.send(embed=e)
 

@@ -178,3 +178,123 @@ async def add_guild_guide(guild_id, link, desc, author):
     async with aiosqlite.connect(path) as db:
         await db.execute(insert_query)
         await db.commit()
+
+# Add guild event
+async def add_guild_event(message_id, guild_id, name, desc, date, duration, creator, subscribers, subscriptable):
+    path = get_db_path()
+
+    insert_query = f"INSERT INTO events VALUES ({message_id}, {guild_id}, '{name}', '{desc}', '{date}', {duration}, '{creator}', '{subscribers}', {subscriptable})"
+
+    async with aiosqlite.connect(path) as db:
+        await db.execute(insert_query)
+        await db.commit()
+
+# Get guild event
+async def get_guild_event(message_id):
+    path = get_db_path()
+
+    select_query = f"SELECT * FROM events WHERE message_id = {message_id}"
+
+    event = {}
+    async with aiosqlite.connect(path) as db:
+        db.row_factory = aiosqlite.Row
+        async with db.execute(select_query) as cursor:
+            async for row in cursor:
+                for key in row.keys():
+                    event[key] = row[key]
+                return event
+
+# Add event subscriber
+async def add_event_subscriber(message_id, subscriber):
+    path = get_db_path()
+
+    select_query = f"SELECT subscribers FROM events WHERE message_id = {message_id}"
+
+    subscribers = ''
+    async with aiosqlite.connect(path) as db:
+        db.row_factory = aiosqlite.Row
+        async with db.execute(select_query) as cursor:
+            async for row in cursor:
+                subscribers = row['subscribers']
+
+    if subscribers != '':
+        if subscriber in subscribers:
+            return 'already'
+        subscribers = subscribers + ',' + subscriber
+    else:
+        subscribers = subscriber
+
+    update_query = f"UPDATE events SET subscribers={subscribers} WHERE message_id = {message_id}"
+
+    async with aiosqlite.connect(path) as db:
+        await db.execute(update_query)
+        await db.commit()
+
+    return 'success'
+
+# Remove event subscriber
+async def remove_event_subscriber(message_id, subscriber):
+    path = get_db_path()
+    path = get_db_path()
+
+    select_query = f"SELECT subscribers FROM events WHERE message_id = {message_id}"
+
+    subscribers = ''
+    async with aiosqlite.connect(path) as db:
+        db.row_factory = aiosqlite.Row
+        async with db.execute(select_query) as cursor:
+            async for row in cursor:
+                subscribers = row['subscribers']
+
+    if subscriber not in subscribers:
+        return 'already'
+    else:
+        subscribers.replace(','+subscriber, ',')
+        subscribers.replace(subscriber, '')
+
+    update_query = f"UPDATE events SET subscribers={subscribers} WHERE message_id = {message_id}"
+
+    async with aiosqlite.connect(path) as db:
+        await db.execute(update_query)
+        await db.commit()
+
+    return 'success'
+
+# Remove guild event
+async def remove_guild_event(message_id):
+    path = get_db_path()
+
+    select_query = f"SELECT message_id FROM events WHERE message_id = {message_id}"
+
+    id = None
+    async with aiosqlite.connect(path) as db:
+        db.row_factory = aiosqlite.Row
+        async with db.execute(select_query) as cursor:
+            async for row in cursor:
+                id = row['message_id']
+
+    if not id:
+        return 'fail'
+
+    delete_query = f"DELETE FROM events WHERE message_id = {message_id}"
+
+    async with aiosqlite.connect(path) as db:
+        await db.execute(delete_query)
+        await db.commit()
+
+    return 'success'
+
+# Get event author
+async def get_event_creator(message_id):
+    path = get_db_path()
+
+    select_query = f"SELECT creator FROM events WHERE message_id = {message_id}"
+
+    creator = None
+    async with aiosqlite.connect(path) as db:
+        db.row_factory = aiosqlite.Row
+        async with db.execute(select_query) as cursor:
+            async for row in cursor:
+                creator = row['creator']
+    
+    return creator

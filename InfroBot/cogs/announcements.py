@@ -130,9 +130,9 @@ class Announcements(commands.Cog):
         message, channel_id = await repo.get_welcome_message(guild.id)
 
         #Adding member mention, if the welcome message hasn't got placeholder
-        message = message.replace("%user%",f"{member.mention}")
         if message == None:
             return
+        message = message.replace("%user%",f"{member.mention}")
 
         channel = guild.get_channel(channel_id)
         if channel == None:
