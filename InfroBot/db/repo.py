@@ -2,6 +2,7 @@ import aiosqlite
 import sys
 import os
 import datetime
+import json
 from messages.locales import locales
 
 #Returns the db path depending on OS
@@ -180,14 +181,15 @@ async def add_guild_guide(guild_id, link, desc, author):
         await db.commit()
 
 # Add guild event
-async def add_guild_event(message_id, channel_id, guild_id, name, desc, date, duration, creator, subscribers, subscriptable):
+async def add_guild_event(message_id, channel_id, guild_id, name, desc, date, end, creator, subscribers, subscriptable):
     path = get_db_path()
 
-    insert_query = f"INSERT INTO events VALUES ({message_id}, {channel_id}, {guild_id}, '{name}', '{desc}', '{date}', {duration}, '{creator}', '{subscribers}', {subscriptable})"
+    insert_query = f"INSERT INTO events VALUES ({message_id}, {channel_id}, {guild_id}, '{name}', '{desc}', '{date}', '{end}', '{creator}', '{subscribers}', {subscriptable})"
 
     async with aiosqlite.connect(path) as db:
         await db.execute(insert_query)
         await db.commit()
+    return 'success'
 
 # Get guild event
 async def get_guild_event(message_id):
@@ -247,7 +249,6 @@ async def get_event_subscribers(message_id):
 # Remove event subscriber
 async def remove_event_subscriber(message_id, subscriber):
     path = get_db_path()
-    path = get_db_path()
 
     select_query = f"SELECT subscribers FROM events WHERE message_id = {message_id}"
 
@@ -261,8 +262,9 @@ async def remove_event_subscriber(message_id, subscriber):
     if subscriber not in subscribers:
         return 'already'
     else:
-        subscribers.replace(','+subscriber, ',')
-        subscribers.replace(subscriber, '')
+        subscribers = subscribers.replace(','+subscriber, ',')
+        subscribers = subscribers.replace(subscriber, '')
+        subscribers = subscribers.strip(',')
 
     update_query = f"UPDATE events SET subscribers='{subscribers}' WHERE message_id = {message_id}"
 
@@ -324,3 +326,31 @@ async def get_event_channel_id(message_id):
             async for row in cursor:
                 channel_id = row['channel_id']
             return channel_id
+
+# Remove old guild events
+async def delete_old_events(now, format='%Y-%m-%d %H:%M'):
+    path = get_db_path()
+    
+    now = now.strftime(format)
+
+    select_query = f"SELECT * FROM events WHERE end < '{now}'"
+    
+    removed_events = ''
+    temp_dict={}
+    async with aiosqlite.connect(path) as db:
+        db.row_factory = aiosqlite.Row
+        async with db.execute(select_query) as cursor:
+            async for row in cursor:
+                for key in row.keys():
+                    temp_dict[key] = row[key]
+                removed_events = removed_events + json.dumps(temp_dict)+'|'
+    if removed_events == '':
+        return 'none'
+
+    delete_query = f"DELETE FROM events WHERE end < '{now}'"
+
+    async with aiosqlite.connect(path) as db:
+        await db.execute(delete_query)
+        await db.commit()
+
+    return 'success'
