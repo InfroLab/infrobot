@@ -365,7 +365,9 @@ async def get_events_for_notifications(now, format='%Y-%m-%d %H:%M'):
     now = now + datetime.timedelta(minutes=11)
     now = now.strftime(format)
 
-    select_query = f"SELECT message_id, guild_id, date, subscribers, name FROM events WHERE date < '{now}'"
+    select_query = f"SELECT message_id, guild_id, date, subscribers, name FROM events \
+        WHERE CAST(strftime('%s', date) as INTEGER) > CAST(strftime('%s', '{now}') AS INTEGER) \
+        AND CAST(strftime('%s', '{now}') AS INTEGER) > CAST(strftime('%s',DATETIME(date, '-15 minutes')) AS INTEGER)"
     
     events_to_notify = []
     temp_dict = {}
