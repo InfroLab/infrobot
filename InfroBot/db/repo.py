@@ -209,6 +209,7 @@ async def get_guild_event(message_id):
 # Add event subscriber
 async def add_event_subscriber(message_id, subscriber):
     path = get_db_path()
+    subscriber = str(subscriber)
 
     select_query = f"SELECT subscribers FROM events WHERE message_id = {message_id}"
 
@@ -249,6 +250,7 @@ async def get_event_subscribers(message_id):
 # Remove event subscriber
 async def remove_event_subscriber(message_id, subscriber):
     path = get_db_path()
+    subscriber = str(subscriber)
 
     select_query = f"SELECT subscribers FROM events WHERE message_id = {message_id}"
 
@@ -336,6 +338,7 @@ async def delete_old_events(now, format='%Y-%m-%d %H:%M'):
     select_query = f"SELECT * FROM events WHERE end < '{now}'"
     
     removed_events = ''
+    removed_events_ids = []
     temp_dict={}
     async with aiosqlite.connect(path) as db:
         db.row_factory = aiosqlite.Row
@@ -344,8 +347,9 @@ async def delete_old_events(now, format='%Y-%m-%d %H:%M'):
                 for key in row.keys():
                     temp_dict[key] = row[key]
                 removed_events = removed_events + json.dumps(temp_dict)+'|'
+                removed_events_ids.append({'message_id': row['message_id'], 'channel_id': row['channel_id']})
     if removed_events == '':
-        return 'none'
+        return 'none', None
 
     delete_query = f"DELETE FROM events WHERE end < '{now}'"
 
@@ -353,4 +357,27 @@ async def delete_old_events(now, format='%Y-%m-%d %H:%M'):
         await db.execute(delete_query)
         await db.commit()
 
-    return 'success'
+    return 'success', removed_events_ids
+
+# Get events to send notifications
+async def get_events_for_notifications(now, format='%Y-%m-%d %H:%M'):
+    path = get_db_path()
+    now = now + datetime.timedelta(minutes=11)
+    now = now.strftime(format)
+
+    select_query = f"SELECT message_id, guild_id, date, subscribers, name FROM events WHERE date < '{now}'"
+    
+    events_to_notify = []
+    temp_dict = {}
+    async with aiosqlite.connect(path) as db:
+        db.row_factory = aiosqlite.Row
+        async with db.execute(select_query) as cursor:
+            async for row in cursor:
+                temp_dict['message_id'] = row['message_id']
+                temp_dict['guild_id'] = row['guild_id']
+                temp_dict['date'] = datetime.datetime.strptime(row['date'], '%Y-%m-%d %H:%M')
+                temp_dict['subscribers'] = row['subscribers']
+                temp_dict['name'] = row['name']
+                events_to_notify.append(temp_dict)
+    
+    return events_to_notify
