@@ -42,12 +42,12 @@ class Events(commands.Cog):
 
     # Method for converting a string of user ids to list of members
     # This works for certain guild id
-    def user_ids_to_members(self, guild_id, ids):
+    async def user_ids_to_members(self, guild_id, ids):
         ids = ids.split(',')
         members = []
-        guild = self.bot.get_guild(guild_id)
+        guild = await self.bot.fetch_guild(guild_id)
         for i in ids:
-            member = guild.get_member(i)
+            member = await guild.fetch_member(int(i))
             if not member:
                 continue
             try:
@@ -71,10 +71,10 @@ class Events(commands.Cog):
                 await ctx.send(f'**Событие с ID {args[0]} удалено!**')
             else:
                 await ctx.send(f'**Событие с ID {args[0]} не найдено!**')
-        elif sub == '*kock*':
+        elif sub == 'kick':
             # Arguments preprocessing
             args = args.split(' ')
-            executor = ctx.author.name+'#'+ctx.author.discriminator
+            executor = ctx.author.id
             creator = await get_event_creator(args[0])
             if not (executor == creator):
                 await ctx.send('**У вас недостаточно прав, так как вы не создатель события!**')
@@ -93,7 +93,7 @@ class Events(commands.Cog):
             # Arguments preprocessing
             args = args.split('|')
             if not args or not len(args) == 5:
-                await ctx.send('*Шаблон команды: !event add <Событие 1>|<Миф Ниалота>|<2020-01-01 19:30>|<количество-часов>|<кого уведомить? - all/online/no>*', delete_after=30)
+                await ctx.send('*Шаблон команды: !event add Событие 1|Миф Ниалота|2020-01-01 19:30|количество-часов|<all-упомянуть всех/online-тех кто онлайн/no-никого>*', delete_after=30)
                 return
             channel_id = ctx.channel.id
             guild_id = ctx.guild.id
@@ -121,7 +121,7 @@ class Events(commands.Cog):
             subscriptable = 1
             event_message = await ctx.send(ping+'*Создаем событие...*')
             message_id = event_message.id
-            result = await add_guild_event(message_id, channel_id,guild_id, name, desc, date, end_formatted, creator, ctx.author.id, subscriptable)
+            result = await add_guild_event(message_id, channel_id, guild_id, name, desc, date, end_formatted, ctx.author.id, ctx.author.id, subscriptable)
             if not result == 'success':
                 await ctx.send('**Ошибка добавления события в БД!**', delete_after=30)
                 await event_message.delete()
@@ -188,11 +188,11 @@ class Events(commands.Cog):
             print('[EVENT TASK]: Attempt to send notifications.')
             events = await get_events_for_notifications(datetime.now())
             for e in events:
-                members = self.user_ids_to_members(e['guild_id'], e['subscribers'])
+                members = await self.user_ids_to_members(e['guild_id'], e['subscribers'])
                 for m in members:
                     dm = await m.create_dm()
                     await dm.send(f"{m.mention} *Уведомление: Вы подписаны на событие {e['name']} с ID {e['message_id']}, которое начинается в {e['date']}*")
-                    print(f"[EVENT TASK]: Notification for following NAME-MESSAGE_ID-DATE tripler was sent: {e['name']}-{e['message_id']}-{e['date']}.")
+                    print(f"[EVENT TASK]: {datetime.now().strftime('%Y-%m-%d %H:%M')} Notification for following NAME-MESSAGE_ID-DATE triplet was sent: {e['name']}-{e['message_id']}-{e['date']}.")
             print('[EVENT TASK]: Notifications sent if there were.')
 
     # Task for clearing the event

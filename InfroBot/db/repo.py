@@ -184,7 +184,7 @@ async def add_guild_guide(guild_id, link, desc, author):
 async def add_guild_event(message_id, channel_id, guild_id, name, desc, date, end, creator, subscribers, subscriptable):
     path = get_db_path()
 
-    insert_query = f"INSERT INTO events VALUES ({message_id}, {channel_id}, {guild_id}, '{name}', '{desc}', '{date}', '{end}', '{creator}', '{subscribers}', {subscriptable})"
+    insert_query = f"INSERT INTO events VALUES ({message_id}, {channel_id}, {guild_id}, '{name}', '{desc}', '{date}', '{end}', {creator}, '{subscribers}', {subscriptable})"
 
     async with aiosqlite.connect(path) as db:
         await db.execute(insert_query)
@@ -381,3 +381,13 @@ async def get_events_for_notifications(now, format='%Y-%m-%d %H:%M'):
                 events_to_notify.append(temp_dict)
     
     return events_to_notify
+
+# Add task report
+async def add_task_report(id, task_name, status, guild_id, report_message):
+    path = get_db_path()
+
+    insert_query = f"INSERT INTO task_reports VALUES ({id}, '{task_name}', '{status}', {guild_id}, '{report_message}')"
+
+    async with aiosqlite.connect(path) as db:
+        await db.execute(insert_query)
+        await db.commit()
