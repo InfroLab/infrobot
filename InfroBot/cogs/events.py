@@ -204,7 +204,10 @@ class Events(commands.Cog):
                 await channel.send(f'**Событие с ID {message_id} удалено!**', delete_after=30)
             else:
                 await channel.send(f'**Событие с ID {message_id} не найдено!**', delete_after=30)
-    
+    # Message deletion event handler
+    #@commands.Cog.listener(name='on_raw_message_delete')
+    #async def event_message_reaction(self, payload):
+    #    pass
     # Task for notification of upcoming events
     @tasks.loop(minutes=5)
     async def event_notifications(self):
@@ -233,6 +236,7 @@ class Events(commands.Cog):
             print('[EVENT TASK]: Successfully cleared some old events.')
         elif result == 'none':
             print('[EVENT TASK]: No old events found.')
+
     def cog_unload(self):
         self.bot.help_command = self._original_help_command
 

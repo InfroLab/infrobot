@@ -11,6 +11,7 @@
     <OutputPath>.</OutputPath>
     <Name>InfroBot</Name>
     <RootNamespace>InfroBot</RootNamespace>
+    <InterpreterId>Global|PythonCore|3.8-32</InterpreterId>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -107,6 +108,20 @@
     <Folder Include="messages\" />
     <Folder Include="timing\" />
     <Folder Include="timing\counter\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Interpreter Include="Pythom 3.7 (64-bit)\">
+      <Id>Pythom 3.7 (64-bit)</Id>
+      <Version>3.7</Version>
+      <Description>Pythom 3.7 (64-bit) (Python 3.7 (64-bit))</Description>
+      <InterpreterPath>Scripts\python.exe</InterpreterPath>
+      <WindowsInterpreterPath>Scripts\pythonw.exe</WindowsInterpreterPath>
+      <PathEnvironmentVariable>PYTHONPATH</PathEnvironmentVariable>
+      <Architecture>X64</Architecture>
+    </Interpreter>
+  </ItemGroup>
+  <ItemGroup>
+    <InterpreterReference Include="Global|PythonCore|3.8-32" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
