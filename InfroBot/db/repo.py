@@ -184,7 +184,7 @@ async def add_guild_guide(guild_id, link, desc, author):
 async def add_guild_event(message_id, channel_id, guild_id, name, desc, date, end, creator, subscribers, subscriptable):
     path = get_db_path()
 
-    insert_query = f"INSERT INTO events VALUES ({message_id}, {channel_id}, {guild_id}, '{name}', '{desc}', '{date}', '{end}', {creator}, '{subscribers}', {subscriptable})"
+    insert_query = f"INSERT INTO events VALUES ({message_id}, {channel_id}, {guild_id}, '{name}', '{desc}', '{date}', '{end}', {creator}, '{subscribers}', {subscriptable}, 0)"
 
     async with aiosqlite.connect(path) as db:
         await db.execute(insert_query)
@@ -364,9 +364,9 @@ async def get_events_for_notifications(now, format='%Y-%m-%d %H:%M'):
     path = get_db_path()
     now = now.strftime(format)
 
-    select_query = f"SELECT message_id, guild_id, date, subscribers, name FROM events \
+    select_query = f"SELECT message_id, guild_id, date, subscribers, name, notifications_sent FROM events \
         WHERE CAST(strftime('%s', date) as INTEGER) > CAST(strftime('%s', '{now}') AS INTEGER) \
-        AND CAST(strftime('%s', '{now}') AS INTEGER) > CAST(strftime('%s',DATETIME(date, '-11 minutes')) AS INTEGER)"
+        AND CAST(strftime('%s', '{now}') AS INTEGER) > CAST(strftime('%s',DATETIME(date, '-30 minutes')) AS INTEGER)"
     
     events_to_notify = []
     temp_dict = {}
@@ -379,10 +379,20 @@ async def get_events_for_notifications(now, format='%Y-%m-%d %H:%M'):
                 temp_dict['date'] = datetime.datetime.strptime(row['date'], '%Y-%m-%d %H:%M')
                 temp_dict['subscribers'] = row['subscribers']
                 temp_dict['name'] = row['name']
+                temp_dict['notifications_sent'] = row['notifications_sent']
                 events_to_notify.append(temp_dict)
     
     return events_to_notify
 
+# Increase `notifications_sent` field in `events`
+async def incr_event_notifications(message_id):
+    path = get_db_path()
+
+    update_query = f"UPDATE events SET notifications_sent = notifications_sent + 1 WHERE message_id = {message_id}"
+
+    async with aiosqlite.connect(path) as db:
+        await db.execute(update_query)
+        await db.commit()
 # Add task report
 async def add_task_report(id, task_name, status, guild_id, report_message):
     path = get_db_path()

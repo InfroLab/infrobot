@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 
 #Packages for commands messages and embeds
 # from events import events
-from db.repo import remove_guild_event, add_event_subscriber, remove_event_subscriber, get_event_creator, add_guild_event, get_event_channel_id, get_event_subscribers, delete_old_events, get_events_for_notifications
+from db.repo import incr_event_notifications, remove_guild_event, add_event_subscriber, remove_event_subscriber, get_event_creator, add_guild_event, get_event_channel_id, get_event_subscribers, delete_old_events, get_events_for_notifications
 
 class Events(commands.Cog):
 
@@ -206,20 +206,27 @@ class Events(commands.Cog):
                 await channel.send(f'**Событие с ID {message_id} не найдено!**', delete_after=30)
     # Message deletion event handler
     #@commands.Cog.listener(name='on_raw_message_delete')
-    #async def event_message_reaction(self, payload):
-    #    pass
+    async def event_message_reaction(self, payload):
+        pass
+
     # Task for notification of upcoming events
-    @tasks.loop(minutes=5)
+    @tasks.loop(minutes=1)
     async def event_notifications(self):
-            print('[EVENT TASK]: Attempt to send notifications.')
-            events = await get_events_for_notifications(datetime.now())
-            for e in events:
+        delta = 10
+        now = datetime.now()
+        print(f"[{now.strftime('%Y-%m-%d %H:%M')}][EVENT TASK]: Attempt to send notifications.")
+        events = await get_events_for_notifications(now)
+        for e in events:
+            sent = e['notifications_sent']
+            start = e['date']
+            if sent < 3 and now > (start - timedelta(minutes=30-sent*delta)):
+                await incr_event_notifications(e['message_id'])
                 members = await self.user_ids_to_members(e['guild_id'], e['subscribers'])
                 for m in members:
                     dm = await m.create_dm()
                     await dm.send(f"> :bell: **Уведомление:** {m.mention}, вы подписаны на событие **{e['name']}** с :id: **{e['message_id']}**, которое начинается в :alarm_clock: **{e['date']}**")
-                    print(f"[EVENT TASK]: {datetime.now().strftime('%Y-%m-%d %H:%M')} Notification for following NAME-MESSAGE_ID-DATE triplet was sent: {e['name']}-{e['message_id']}-{e['date']}.")
-            print('[EVENT TASK]: Notifications sent if there were.')
+                    print(f"[{now.strftime('%Y-%m-%d %H:%M')}][EVENT TASK]: Notification for following NAME-MESSAGE_ID-DATE triplet was sent: {e['name']}-{e['message_id']}-{e['date'].strftime('%Y-%m-%d %H:%M')}.")
+        print(f"[{now.strftime('%Y-%m-%d %H:%M')}][EVENT TASK]: Notifications sent if there were to.")
 
     # Task for clearing the event
     @tasks.loop(hours=1)
