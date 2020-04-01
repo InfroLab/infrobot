@@ -250,7 +250,7 @@ async def get_event_subscribers(message_id):
 # Remove event subscriber
 async def remove_event_subscriber(message_id, subscriber):
     path = get_db_path()
-    subscriber = str(subscriber)
+    subscriber = subscriber
 
     select_query = f"SELECT subscribers FROM events WHERE message_id = {message_id}"
 
@@ -362,7 +362,6 @@ async def delete_old_events(now, format='%Y-%m-%d %H:%M'):
 # Get events to send notifications
 async def get_events_for_notifications(now, format='%Y-%m-%d %H:%M'):
     path = get_db_path()
-    now = now + datetime.timedelta(minutes=11)
     now = now.strftime(format)
 
     select_query = f"SELECT message_id, guild_id, date, subscribers, name FROM events \

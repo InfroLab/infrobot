@@ -64,31 +64,39 @@ class Events(commands.Cog):
         if sub == 'remove':
             # Arguments preprocessing
             args = args.split(' ')
+            executor = ctx.author.id
+            creator = await get_event_creator(args[0])
+            if not (executor == creator):
+                await ctx.send('**У вас недостаточно прав, так как вы не создатель события!**', delete_after=30)
+                return
             event_message = await self.get_message(args[0])
             await event_message.delete()
             result = await remove_guild_event(args[0])
             if result == 'success':
-                await ctx.send(f'**Событие с ID {args[0]} удалено!**')
+                await ctx.send(f'**Событие с ID {args[0]} удалено!**', delete_after=30)
             else:
-                await ctx.send(f'**Событие с ID {args[0]} не найдено!**')
+                await ctx.send(f'**Событие с ID {args[0]} не найдено!**', delete_after=30)
         elif sub == 'kick':
             # Arguments preprocessing
             args = args.split(' ')
             executor = ctx.author.id
             creator = await get_event_creator(args[0])
             if not (executor == creator):
-                await ctx.send('**У вас недостаточно прав, так как вы не создатель события!**')
+                await ctx.send('**У вас недостаточно прав, так как вы не создатель события!**', delete_after=30)
                 return
-            result = await remove_event_subscriber(args[0], args[1])
+            member_id = args[1][3:-1]
+            result = await remove_event_subscriber(args[0], member_id)
             if result == 'success':
                 event_message = await self.get_message(args[0])
                 subscribers = await get_event_subscribers(args[0])
+                if subscribers.replace(' ', '') == '':
+                    subscribers = 'Нет подписчиков'
                 event_embed = event_message.embeds[0]
                 event_embed = event_embed.set_field_at(3, name='Подписчики', value=subscribers)
                 await event_message.edit(embed=event_embed)
-                await ctx.send(f'**Вы кикнули {args[1]} с события с ID {args[0]}.**')
+                await ctx.send(f'**Вы кикнули {args[1]} с события с ID {args[0]}.**', delete_after=30)
             else:
-                await ctx.send(f'**Событие с ID {args} не найдено, либо удаляемый пользователь на него не подписан! Шаблон команды: !event kick <ид> <пользователь#номер>**')
+                await ctx.send(f'**Событие с ID {args} не найдено, либо удаляемый пользователь на него не подписан! Шаблон команды: !event kick <ид> <пользователь#номер>**', delete_after=30)
         elif sub == 'add':
             # Arguments preprocessing
             args = args.split('|')
@@ -141,6 +149,7 @@ class Events(commands.Cog):
             await event_message.edit(content=ping+'**Событие**', embed=event_embed)
             await event_message.add_reaction('👍')
             await event_message.add_reaction('👎')
+            await event_message.add_reaction('❌')
         else:
             await ctx.send('**Неизвестная подкоманда! Доступные: add - добавить событие, remove - удалить событие, \
                  kick(отключено) - удалить подписчика события!**', delete_after=90)
@@ -181,6 +190,20 @@ class Events(commands.Cog):
             else:
                 await event_message.remove_reaction(emoji, member)
                 await channel.send(f'**{member.mention}, событие с ID {message_id} не найдено, либо вы на него не подписаны!**', delete_after=30)
+        elif '**Событие**' in event_message.content and emoji.name == '❌' and not member.display_name == self.bot.user.display_name:
+            await event_message.remove_reaction(emoji, member)
+            executor = member.id
+            creator = await get_event_creator(message_id)
+            if not (executor == creator):
+                await channel.send('**У вас недостаточно прав, так как вы не создатель события!**', delete_after=30)
+                return
+            event_message = await self.get_message(message_id)
+            await event_message.delete()
+            result = await remove_guild_event(message_id)
+            if result == 'success':
+                await channel.send(f'**Событие с ID {message_id} удалено!**', delete_after=30)
+            else:
+                await channel.send(f'**Событие с ID {message_id} не найдено!**', delete_after=30)
     
     # Task for notification of upcoming events
     @tasks.loop(minutes=5)
@@ -191,7 +214,7 @@ class Events(commands.Cog):
                 members = await self.user_ids_to_members(e['guild_id'], e['subscribers'])
                 for m in members:
                     dm = await m.create_dm()
-                    await dm.send(f"{m.mention} *Уведомление: Вы подписаны на событие {e['name']} с ID {e['message_id']}, которое начинается в {e['date']}*")
+                    await dm.send(f"> :bell: **Уведомление:** {m.mention}, вы подписаны на событие **{e['name']}** с :id: **{e['message_id']}**, которое начинается в :alarm_clock: **{e['date']}**")
                     print(f"[EVENT TASK]: {datetime.now().strftime('%Y-%m-%d %H:%M')} Notification for following NAME-MESSAGE_ID-DATE triplet was sent: {e['name']}-{e['message_id']}-{e['date']}.")
             print('[EVENT TASK]: Notifications sent if there were.')
 

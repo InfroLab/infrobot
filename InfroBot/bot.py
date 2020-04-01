@@ -60,7 +60,8 @@ for f in os.listdir('./cogs'):
 #Stats collecting
 @bot.event
 async def on_message(message):
-    await repo.add_message(message)
+    if message.guild:
+        await repo.add_message(message)
     await bot.process_commands(message)
 
 #Bot launch
