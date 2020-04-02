@@ -12,6 +12,9 @@ class Events(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.ping_dict = {'all': '@everyone ', 'online': '@here ', 'no': ''}
+        # Stores keys - author ids, values - list: [message_id, channel_id, guild_id]
+        # This is necessary for event creation dialog
+        self.event_menu_ids = {}
         print('[LOADING EVENT TASKS]')
         self.event_cleaner.start()
         self.event_notifications.start()
@@ -150,6 +153,27 @@ class Events(commands.Cog):
             await event_message.add_reaction('👍')
             await event_message.add_reaction('👎')
             await event_message.add_reaction('❌')
+        elif sub == 'menu':
+            # Arguments preprocessing
+            menu_message = None
+            menu_message_content = ''
+            if self.event_menu_ids.get(ctx.author.id):
+                menu_message = await self.get_message(self.event_menu_ids[ctx.author.id][0], channel_id=self.event_menu_ids[ctx.author.id][1])
+                menu_message_content = menu_message.content
+
+            if not args:
+                event_message = await ctx.send('**Создаю меню**')
+                self.event_menu_ids[ctx.author.id] = [event_message.id, event_message.channel.id, event_message.guild.id]
+                event_embed = discord.Embed(
+                    colour = discord.Color.green()
+                )
+                event_embed.set_author(name=ctx.message.author.display_name, icon_url=ctx.message.author.avatar_url)
+                event_embed.set_footer(text=self.bot.user.display_name)
+                event_embed.add_field(name='ID', value=event_message.id, inline=False)
+                event_embed.add_field(name='#1', value='Придумайте название события. Наберите !event menu Название')
+                await event_message.edit(content='#1 Выберите название события', embed=event_embed)
+            elif '#1' in menu_message_content:
+                await ctx.send('WIP', delete_after=30)
         else:
             await ctx.send('**Неизвестная подкоманда! Доступные: add - добавить событие, remove - удалить событие, \
                  kick(отключено) - удалить подписчика события!**', delete_after=90)
