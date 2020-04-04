@@ -5,6 +5,11 @@ import datetime
 import json
 from messages.locales import locales
 
+# Utility functions
+def hour_rounder(t):
+    # Rounds to nearest hour by adding a timedelta hour if minute >= 30
+    return (t.replace(second=0, microsecond=0, minute=0, hour=t.hour)+datetime.timedelta(hours=t.minute//30))
+
 # Returns the db path depending on OS
 def get_db_path():
     path = None
@@ -419,4 +424,41 @@ async def add_task_report(id, task_name, status, guild_id, report_message):
 
     async with aiosqlite.connect(path) as db:
         await db.execute(insert_query)
+        await db.commit()
+
+
+# ----------------- #
+# Events operations #
+# ----------------- #
+
+# Get message stats for guild
+async def get_messages_stats(guild_id):
+    path = get_db_path()
+
+    select_query = f'SELECT \
+        COUNT(message_id) as messages_sent, COUNT(DISTINCT author_id) as unique_authors, SUM(CASE WHEN message LIKE "!%" THEN 1 ELSE 0 END) as commands_sent \
+        FROM messages_history \
+        WHERE guild_id = {guild_id} \
+        GROUP BY guild_id'
+
+    async with aiosqlite.connect(path) as db:
+        db.row_factory = aiosqlite.Row
+        async with db.execute(select_query) as cursor:
+            async for row in cursor:
+                result = {}
+                for key in row.keys():
+                    result[key] = row[key]
+                return result
+
+# Collect current user amount
+async def collect_current_users(guild_id, users_amount):
+    path = get_db_path()
+
+    dt = hour_rounder(datetime.datetime.now())
+    dt = dt.strftime('%Y-%m-%d %H:%M')
+
+    insert_query_users_amount = f"INSERT INTO stats VALUES ({guild_id}, '{dt}', 'users_amount', '{users_amount}'"
+
+    async with aiosqlite.connect(path) as db:
+        await db.execute(insert_query_users_amount)
         await db.commit()
