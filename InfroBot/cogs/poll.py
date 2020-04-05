@@ -31,4 +31,4 @@ class Poll(commands.Cog):
             pass
 
 def setup(bot):
-    bot.add_cog(Events(bot))
+    bot.add_cog(Poll(bot))

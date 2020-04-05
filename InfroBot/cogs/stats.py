@@ -18,7 +18,7 @@ class Stats(commands.Cog):
     @commands.Cog.listener(name='on_ready')
     async def tasks_on_ready(self):
         print('[LOADING STATS TASKS]')
-        self.event_cleaner.start()
+        self.collect_hourly_stat.start()
 
     @commands.command(name='stats')
     async def stats(self, ctx, arg):
@@ -40,7 +40,7 @@ class Stats(commands.Cog):
 
     # Task for collecting guild stats
     @tasks.loop(minutes=2)
-    async def event_cleaner(self):
+    async def collect_hourly_stat(self):
         now = datetime.now()
         nearest_hour = hour_rounder(now)
         delta = now - nearest_hour

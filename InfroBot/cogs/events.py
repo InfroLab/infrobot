@@ -229,7 +229,7 @@ class Events(commands.Cog):
                 await channel.send(f'**Событие с ID {message_id} не найдено!**', delete_after=30)
     # Message deletion event handler
     #@commands.Cog.listener(name='on_raw_message_delete')
-    async def event_message_reaction(self, payload):
+    async def event_message_deletion(self, payload):
         pass
 
     # Task for notification of upcoming events
