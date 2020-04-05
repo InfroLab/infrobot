@@ -5,8 +5,12 @@ from discord.ext import commands
 
 from db import repo
 
+# Getting paths
+dir = os.path.dirname(__file__)
+config_path = os.path.join(dir, 'config.json')
+cogs_path = os.path.join(dir, 'cogs')
 # Loading gitignored config
-with open(r'.\\config.json', 'r') as config_json:
+with open(config_path, 'r') as config_json:
     config = json.load(config_json)
 
 # Logging level
@@ -44,7 +48,7 @@ async def unload_cog(ctx, extension):
         await ctx.send(f"**You don't have permissios to use this command.**")
 
 # Loading cogs
-for f in os.listdir('./cogs'):
+for f in os.listdir(cogs_path):
     if f.endswith('.py'):
         bot.load_extension(f'cogs.{f[:-3]}')
 

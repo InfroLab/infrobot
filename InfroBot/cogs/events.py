@@ -1,10 +1,9 @@
-import discord
 import itertools
-from discord.ext import commands, tasks
 from datetime import datetime, timedelta
 
-#Packages for commands messages and embeds
-# from events import events
+import discord
+from discord.ext import commands, tasks
+
 from db.repo import incr_event_notifications, remove_guild_event, add_event_subscriber, remove_event_subscriber, get_event_creator, add_guild_event, get_event_channel_id, get_event_subscribers, delete_old_events, get_events_for_notifications
 
 class Events(commands.Cog):
@@ -267,9 +266,6 @@ class Events(commands.Cog):
             print('[EVENT TASK]: Successfully cleared some old events.')
         elif result == 'none':
             print('[EVENT TASK]: No old events found.')
-
-    def cog_unload(self):
-        self.bot.help_command = self._original_help_command
 
 def setup(bot):
     bot.add_cog(Events(bot))

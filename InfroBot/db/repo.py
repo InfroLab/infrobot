@@ -1,24 +1,12 @@
-import aiosqlite
-import sys
-import os
-import datetime
-import json
+import sys, os, datetime, json
+
+import discord, aiosqlite
+
 from messages.locales import locales
+from utility.path import get_db_path
 
-# Utility functions
-def hour_rounder(t):
-    # Rounds to nearest hour by adding a timedelta hour if minute >= 30
-    return (t.replace(second=0, microsecond=0, minute=0, hour=t.hour)+datetime.timedelta(hours=t.minute//30))
+path = get_db_path()
 
-# Returns the db path depending on OS
-def get_db_path():
-    path = None
-    if sys.platform == "win32":
-        path = os.getcwd() + "\\db\\bot.db"
-    if sys.platform == "darwin":
-        path = os.getcwd() + "/db/bot.db"
-
-    return path
 # ------------------ #
 # Locales operations #
 # ------------------ #
@@ -26,7 +14,6 @@ def get_db_path():
 # Returns servers locales
 async def get_server_locales():
     locales = {}
-    path = get_db_path()
 
     select_query = 'SELECT guild_id, locale FROM guilds'
 
@@ -39,7 +26,6 @@ async def get_server_locales():
 
 # Set guild locale
 async def set_guild_locale(guild_id, locale):
-    path = get_db_path()
 
     update_query = f"UPDATE guilds SET locale='{locale}' WHERE guild_id={guild_id}"
 
@@ -49,7 +35,6 @@ async def set_guild_locale(guild_id, locale):
 
 # Get guild locale
 async def get_guild_locale(guild_id):
-    path = get_db_path()
 
     select_query = f"SELECT locale FROM guilds WHERE guild_id={guild_id}"
 
@@ -65,7 +50,6 @@ async def get_guild_locale(guild_id):
 # Returns the list of Pack objects
 async def get_pack_items():
     packs = []
-    path = get_db_path()
 
     select_query = 'SELECT author, author_image, image, thumb, name, link, short_desc, desc FROM packs'
 
@@ -81,7 +65,6 @@ async def get_pack_items():
 
 # Adds a new guild entry to 'guilds' table
 async def add_guild(guild):
-    path = get_db_path()
     bans_cnt = len(await guild.bans())
     t_channels_cnt = len(guild.channels)
     v_channels_cnt = len(guild.voice_channels)
@@ -106,7 +89,6 @@ async def add_guild(guild):
 # Adds a new message to a respective guild
 async def add_message(message):
 
-    path = get_db_path()
     
     guild_name = 'NULL'
     guild_id = 'NULL'
@@ -124,7 +106,6 @@ async def add_message(message):
 
 # Set welcome message
 async def set_welcome_message(guild_id, channel_id, args):
-    path = get_db_path()
 
     if args.find('%user%') == -1:
         args = '%user%' + args
@@ -138,7 +119,6 @@ async def set_welcome_message(guild_id, channel_id, args):
 
 # Get welcome message
 async def get_welcome_message(guild_id):
-    path = get_db_path()
 
     select_query = f"SELECT welcome_message, welcome_channel FROM guilds WHERE guild_id = {guild_id}"
 
@@ -151,13 +131,8 @@ async def get_welcome_message(guild_id):
 
     return message, channel_id
 
-# Add new publication
-async def add_publication(channel, title, text,  time):#TO-DO
-    pass
-
 # Add publication
 async def add_publication(guild_id, channel, title, text, time):
-    path = get_db_path()
 
     update_query = f"UPDATE guilds SET post_channel = {channel}, post_title = '{title}', post_text = '{text}', post_time = '{time}' WHERE guild_id={guild_id}"
 
@@ -171,7 +146,6 @@ async def add_publication(guild_id, channel, title, text, time):
 
 # Get guides for guild with given query
 async def get_guild_guides(guild_id, query):
-    path = get_db_path()
     query = query.replace('"','').replace("'","")
 
     select_query = f"SELECT author, title, desc FROM guides WHERE guild_id = {guild_id} AND (desc LIKE '%{query}%' OR title LIKE '%{query}%')"
@@ -191,7 +165,6 @@ async def get_guild_guides(guild_id, query):
 
 # Add guild guide
 async def add_guild_guide(guild_id, link, desc, author):
-    path = get_db_path()
 
     insert_query = f"INSERT INTO guides VALUES ({guild_id}, '{link}', '{desc}', '{author}')"
 
@@ -205,7 +178,6 @@ async def add_guild_guide(guild_id, link, desc, author):
 
 # Add guild event
 async def add_guild_event(message_id, channel_id, guild_id, name, desc, date, end, creator, subscribers, subscriptable):
-    path = get_db_path()
 
     insert_query = f"INSERT INTO events VALUES ({message_id}, {channel_id}, {guild_id}, '{name}', '{desc}', '{date}', '{end}', {creator}, '{subscribers}', {subscriptable}, 0)"
 
@@ -216,7 +188,6 @@ async def add_guild_event(message_id, channel_id, guild_id, name, desc, date, en
 
 # Get guild event
 async def get_guild_event(message_id):
-    path = get_db_path()
 
     select_query = f"SELECT * FROM events WHERE message_id = {message_id}"
 
@@ -231,7 +202,6 @@ async def get_guild_event(message_id):
 
 # Add event subscriber
 async def add_event_subscriber(message_id, subscriber):
-    path = get_db_path()
     subscriber = str(subscriber)
 
     select_query = f"SELECT subscribers FROM events WHERE message_id = {message_id}"
@@ -260,7 +230,6 @@ async def add_event_subscriber(message_id, subscriber):
 
 # Get event subscribers
 async def get_event_subscribers(message_id):
-    path = get_db_path()
 
     select_query = f"SELECT subscribers FROM events WHERE message_id = {message_id}"
 
@@ -272,7 +241,6 @@ async def get_event_subscribers(message_id):
 
 # Remove event subscriber
 async def remove_event_subscriber(message_id, subscriber):
-    path = get_db_path()
     subscriber = subscriber
 
     select_query = f"SELECT subscribers FROM events WHERE message_id = {message_id}"
@@ -301,7 +269,6 @@ async def remove_event_subscriber(message_id, subscriber):
 
 # Remove guild event
 async def remove_guild_event(message_id):
-    path = get_db_path()
 
     select_query = f"SELECT message_id FROM events WHERE message_id = {message_id}"
 
@@ -325,7 +292,6 @@ async def remove_guild_event(message_id):
 
 # Get event author
 async def get_event_creator(message_id):
-    path = get_db_path()
 
     select_query = f"SELECT creator FROM events WHERE message_id = {message_id}"
 
@@ -340,7 +306,6 @@ async def get_event_creator(message_id):
 
 # Get event channel id
 async def get_event_channel_id(message_id):
-    path = get_db_path()
 
     select_query = f"SELECT channel_id FROM events WHERE message_id = {message_id}"
 
@@ -354,7 +319,6 @@ async def get_event_channel_id(message_id):
 
 # Remove old guild events
 async def delete_old_events(now, format='%Y-%m-%d %H:%M'):
-    path = get_db_path()
     
     now = now.strftime(format)
 
@@ -384,7 +348,6 @@ async def delete_old_events(now, format='%Y-%m-%d %H:%M'):
 
 # Get events to send notifications
 async def get_events_for_notifications(now, format='%Y-%m-%d %H:%M'):
-    path = get_db_path()
     now = now.strftime(format)
 
     select_query = f"SELECT message_id, guild_id, date, subscribers, name, notifications_sent FROM events \
@@ -409,7 +372,6 @@ async def get_events_for_notifications(now, format='%Y-%m-%d %H:%M'):
 
 # Increase `notifications_sent` field in `events`
 async def incr_event_notifications(message_id):
-    path = get_db_path()
 
     update_query = f"UPDATE events SET notifications_sent = notifications_sent + 1 WHERE message_id = {message_id}"
 
@@ -418,7 +380,6 @@ async def incr_event_notifications(message_id):
         await db.commit()
 # Add task report
 async def add_task_report(id, task_name, status, guild_id, report_message):
-    path = get_db_path()
 
     insert_query = f"INSERT INTO task_reports VALUES ({id}, '{task_name}', '{status}', {guild_id}, '{report_message}')"
 
@@ -427,13 +388,12 @@ async def add_task_report(id, task_name, status, guild_id, report_message):
         await db.commit()
 
 
-# ----------------- #
-# Events operations #
-# ----------------- #
+# ---------------- #
+# Stats operations #
+# ---------------- #
 
 # Get message stats for guild
 async def get_messages_stats(guild_id):
-    path = get_db_path()
 
     select_query = f'SELECT \
         COUNT(message_id) as messages_sent, COUNT(DISTINCT author_id) as unique_authors, SUM(CASE WHEN message LIKE "!%" THEN 1 ELSE 0 END) as commands_sent \
@@ -451,14 +411,37 @@ async def get_messages_stats(guild_id):
                 return result
 
 # Collect current user amount
-async def collect_current_users(guild_id, users_amount):
-    path = get_db_path()
+async def collect_current_users(guild_id, users):
 
+    users_amount = len(users)
+    users_ids = [n.id for n in users]
     dt = hour_rounder(datetime.datetime.now())
     dt = dt.strftime('%Y-%m-%d %H:%M')
 
-    insert_query_users_amount = f"INSERT INTO stats VALUES ({guild_id}, '{dt}', 'users_amount', '{users_amount}'"
+    insert_query_users_amount = f"INSERT INTO stats VALUES ({guild_id}, '{dt}', 'users_amount', '{users_amount}')"
+    insert_query_users = f"INSERT INTO stats VALUES ({guild_id}, '{dt}', 'users', '{users_ids}')" 
 
     async with aiosqlite.connect(path) as db:
         await db.execute(insert_query_users_amount)
+        await db.execute(insert_query_users)
         await db.commit()
+
+# ------------------ #
+# History operations #
+# ------------------ #
+
+async def get_messages_history(guild_id, user_id):
+
+    select_query = f"SELECT date_time, channel, author, message	FROM messages_history WHERE author_id = {user_id} and guild_id = {guild_id}"
+
+    messages = []
+    async with aiosqlite.connect(path) as db:
+        db.row_factory = aiosqlite.Row
+        async with db.execute(select_query) as cursor:
+            async for row in cursor:
+                row_dict = {}
+                for key in row.keys():
+                    row_dict[key] = row[key]
+                messages.append(row_dict)
+    return messages
+

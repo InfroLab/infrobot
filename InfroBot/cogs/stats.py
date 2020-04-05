@@ -4,18 +4,21 @@ from datetime import datetime
 import discord
 from discord.ext import commands, tasks
 
-from db.repo import get_messages_stats, hour_rounder, collect_current_users
-
+from db.repo import get_messages_stats, collect_current_users, add_guild
+from utility.watchmaker import hour_rounder
 
 class Stats(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        self.event_cleaner.start()
 
     @commands.Cog.listener(name='on_guild_join')
     async def guild_join(self, guild):
-        await repo.add_guild(guild)
+        await add_guild(guild)
+    @commands.Cog.listener(name='on_ready')
+    async def tasks_on_ready(self):
+        print('[LOADING STATS TASKS]')
+        self.event_cleaner.start()
 
     @commands.command(name='stats')
     async def stats(self, ctx, arg):
@@ -33,23 +36,19 @@ class Stats(commands.Cog):
 
     @commands.command(name='addstat')
     async def addstat(self, ctx):
-        await repo.add_guild(ctx.guild)
+        await add_guild(ctx.guild)
 
     # Task for collecting guild stats
-    @tasks.loop(minutes=5)
+    @tasks.loop(minutes=2)
     async def event_cleaner(self):
         now = datetime.now()
         nearest_hour = hour_rounder(now)
         delta = now - nearest_hour
         minutes = abs(delta.seconds / 60)
         if minutes < 5:
-            print(f"[{now.strftime('%Y-%m-%d %H:%M')}][STATS TASK]: Collecting guilds stats for this hours!")
-            print(self.bot.guilds)
+            print(f"[{now.strftime('%Y-%m-%d %H:%M')}][STATS TASK]: Collecting guilds stats for this hour!")
             for guild in self.bot.guilds:
-                members = []
-                async for member in guild.fetch_members(limit=None):
-                    members.append(member.id)
-                await collect_current_users(guild.id, len(members))
+                await collect_current_users(guild.id, guild.members)
             print(f"[{now.strftime('%Y-%m-%d %H:%M')}][STATS TASK]: Guilds stats collection done!")
 def setup(bot):
     bot.add_cog(Stats(bot))

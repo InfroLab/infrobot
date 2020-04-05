@@ -351,5 +351,4 @@ healthchecksdb
 /InfroBot/config.json
 InfroBot/InfroBot.pyproj
 .vscode/launch.json
-InfroBot/InfroBot.pyproj
-InfroBot/InfroBot.pyproj
+InfroBot/cogs/messages_history
