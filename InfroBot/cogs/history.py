@@ -11,6 +11,7 @@ class History(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    @commands.has_guild_permissions(administrator=True)
     @commands.command(name='history')
     async def history(self, ctx, arg, query_user=None):
         if arg == 'messages':
@@ -26,6 +27,9 @@ class History(commands.Cog):
                 json.dump(history_dicts , f, indent=4, separators=(',', ':'))
                 history_file = discord.File(history_path, filename=f'{guild_id}-{user_id}.json', spoiler=True)
                 await ctx.author.send(f'**Статистика сообщений пользователя {user.mention} по серверу {ctx.guild.name}:**', file=history_file)
-
+    @history.error
+    async def history_error(self, ctx, error):
+        if isinstance(error, commands.CheckFailure):
+            await ctx.send('**У вас нет прав администратора.**')
 def setup(bot):
     bot.add_cog(History(bot))
