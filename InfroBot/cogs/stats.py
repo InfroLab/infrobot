@@ -39,13 +39,12 @@ class Stats(commands.Cog):
         await add_guild(ctx.guild)
 
     # Task for collecting guild stats
-    @tasks.loop(minutes=2)
+    @tasks.loop(minutes=4,seconds=30)
     async def collect_hourly_stat(self):
         now = datetime.now()
         nearest_hour = hour_rounder(now)
         delta = now - nearest_hour
-        minutes = abs(delta.seconds / 60)
-        if minutes < 5:
+        if delta.seconds < 300:
             print(f"[{now.strftime('%Y-%m-%d %H:%M')}][STATS TASK]: Collecting guilds stats for this hour!")
             for guild in self.bot.guilds:
                 await collect_current_users(guild.id, guild.members)
