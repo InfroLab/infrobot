@@ -446,3 +446,14 @@ async def get_messages_history(guild_id, user_id):
                 messages.append(row_dict)
     return messages
 
+# -------------------- #
+# Penalties operations #
+# -------------------- #
+async def add_penalty(guild_id, user_id, scores):
+    pass
+async def remove_penalty(guild_id, user_id, scores):
+    pass
+async def list_penalties(guild_id, user_id):
+    pass
+async def set_penalty_limits(guild_id, limit_scores, limit_period):
+    pass
