@@ -13,7 +13,7 @@ class Penalty(commands.Cog):
 
     @commands.has_role('Mod')
     @commands.command(name='penalty')
-    async def penalty(self, ctx, arg, member : discord.Member, *, scores=None, reason=None):
+    async def penalty(self, ctx, arg, member : discord.Member, scores=None, *reason):
         if arg == 'give':
             pass
         elif arg == 'take':
@@ -21,8 +21,6 @@ class Penalty(commands.Cog):
         elif arg == 'list':
             pass
         elif arg == 'set':
-            pass
-        elif arg == 'show':
             pass
 
     @penalty.error

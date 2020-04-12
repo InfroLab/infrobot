@@ -147,9 +147,10 @@ async def add_publication(guild_id, channel, title, text, time):
 
 # Get guides for guild with given query
 async def get_guild_guides(guild_id, query):
-    query = query.replace('"','').replace("'","")
+    query = query.replace('"',"'")
+    query = '"%' + query + '%"'
 
-    select_query = f"SELECT author, title, desc FROM guides WHERE guild_id = {guild_id} AND (desc LIKE '%{query}%' OR title LIKE '%{query}%')"
+    select_query = f"SELECT guide_id, author, title, desc FROM guides WHERE guild_id = {guild_id} AND (desc LIKE {query} OR title LIKE {query})"
 
     guides = []
     async with aiosqlite.connect(path) as db:
@@ -157,6 +158,7 @@ async def get_guild_guides(guild_id, query):
         async with db.execute(select_query) as cursor:
             async for row in cursor:
                 guide = {}
+                guide['guide_id'] = row['guide_id']
                 guide['author'] = row['author']
                 guide['title'] = row['title']
                 guide['desc'] = row['desc']
@@ -165,13 +167,43 @@ async def get_guild_guides(guild_id, query):
     return guides
 
 # Add guild guide
-async def add_guild_guide(guild_id, link, desc, author):
+async def add_guild_guide(guild_id, text, desc, author, image=None):
+    # Preprocessing text and desc for quotes
+    text.replace('"', "'")
+    desc.replace('"', "'")
+    text = '"' + text + '"'
+    desc = '"' + desc + '"'
 
-    insert_query = f"INSERT INTO guides VALUES ({guild_id}, '{link}', '{desc}', '{author}')"
+    if not image:
+        image = 'NULL'
+
+    insert_query = f"INSERT INTO guides VALUES ({guild_id}, {text}, {desc}, '{author}', '{image}')"
 
     async with aiosqlite.connect(path) as db:
         await db.execute(insert_query)
         await db.commit()
+
+# Delete guild guide
+async def delete_guild_guide(guild_id, guide_id):
+
+    # Checking if guild has a given guide id
+    select_query = f"SELECT guide_id FROM guides WHERE guide_id = {guide_id} AND guild_id = {guild_id}"
+
+    is_there = None
+    async with aiosqlite.connect(path) as db:
+        db.row_factory = aiosqlite.Row
+        async with db.execute(select_query) as cursor:
+            async for row in cursor:
+                is_there = row['guide_id']
+    if not is_there:
+        return 'not found'
+    
+    delete_query = f"DELETE FROM guides WHERE guide_id = {guide_id} AND guild_id = {guild_id}"
+
+    async with aiosqlite.connect(path) as db:
+        await db.execute(delete_query)
+        await db.commit()
+    return 'success'
 
 # ----------------- #
 # Events operations #
