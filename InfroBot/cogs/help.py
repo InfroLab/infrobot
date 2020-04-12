@@ -25,6 +25,8 @@ class Help(commands.Cog):
         embed.add_field(name = '**Команды для роли Mod**', value = ' ---------------------------------------- ', inline=False)
         embed.add_field(name = '**!clear <количество>**', value = 'Удаляет указанное количество сообщений.')
         embed.add_field(name = '**!kick <@user>**', value = 'Кикает указанного пользователя с сервера.')
+        embed.add_field(name = '**!penalty give <@user> <количество>**', value = 'Выдает пользователю штрафные очки.')
+        embed.add_field(name = '**!penalty list <@user**', value = 'Показывает список последних 20 штрафов по пользователю.')
         embed.add_field(name = '**!ban/unban <@user>**', value = 'Банит/разбанивает указанного пользователя.')
         embed.add_field(name = '**!mute/unmute <@user>**', value = 'Мутит/размучивает указанного пользователя.')
         embed.add_field(name = '**!invite [age] [uses]**', value = 'Создать приглашение на сервер. age - время может быть "30m", "1h", \

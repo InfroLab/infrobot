@@ -69,18 +69,15 @@ async def add_guild(guild):
     bans_cnt = len(await guild.bans())
     t_channels_cnt = len(guild.channels)
     v_channels_cnt = len(guild.voice_channels)
-    msgs_cnt = 0
+    msgs_cnt = 0 # TODO: take message count from `messages` table
     is_stat_on = 1
-    last_toggle = datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S")
+    last_toggle = datetime.datetime.now().strftime("%Y-%m-%d, %H:%M:%S")
     last_toggle = f"'{last_toggle}'"
  
-    messages_query = f"CREATE TABLE '{guild.id}' (id INTEGER PRIMARY KEY UNIQUE, channel_name TEXT NOT NULL, author TEXT NOT NULL, message TEXT)"
     guilds_query = f'INSERT INTO guilds (guild_id, total_users, admin_id, total_t_channels, total_v_channels, total_banned, total_messages, is_stat_on, last_toggle) VALUES ({guild.id}, {guild.member_count}, {guild.owner.id}, {t_channels_cnt}, {v_channels_cnt}, {bans_cnt}, {msgs_cnt}, {is_stat_on}, {last_toggle})'
 
     async with aiosqlite.connect(path) as db:
         await db.execute(guilds_query)
-        await db.commit()
-        await db.execute(messages_query)
         await db.commit()
 
 # ------------------------------------ #
@@ -481,11 +478,62 @@ async def get_messages_history(guild_id, user_id):
 # -------------------- #
 # Penalties operations #
 # -------------------- #
-async def add_penalty(guild_id, user_id, scores):
+async def give_penalty(guild_id, member_id, scores, reason):
+    reason.replace('"', "'")
+    reason = '"' + reason + '"'
+    dt = datetime.datetime.now()
+    dt = '"' + dt.strftime("%Y-%m-%d, %H:%M:%S") + '"'
+    if not reason:
+        reason = 'NULL'
+
+    insert_query = f'INSERT INTO penalties VALUES ({dt}, {guild_id}, {member_id}, {scores}, {reason})'
+
+    async with aiosqlite.connect(path) as db:
+        await db.execute(insert_query)
+        await db.commit()
+
+    # Such values are just in case scores or penalty_limit were not found
+    sum_scores = -1
+    penalty_limit = 0
+
+    select_query = f'SELECT SUM(scores) as sum_scores FROM penalties WHERE guild_id = {guild_id} AND member_id = {member_id} GROUP BY {guild_id}'
+
+    async with aiosqlite.connect(path) as db:
+        db.row_factory = aiosqlite.Row
+        async with db.execute(select_query) as cursor:
+            async for row in cursor:
+                sum_scores = row['sum_scores']
+
+    select_query = f'SELECT penalty_limit FROM guilds WHERE guild_id = {guild_id}'
+
+    async with aiosqlite.connect(path) as db:
+        db.row_factory = aiosqlite.Row
+        async with db.execute(select_query) as cursor:
+            async for row in cursor:
+                penalty_limit = row['penalty_limit']
+
+    if sum_scores >= penalty_limit:
+        return 'overflow'
+    else:
+        return 'success'
+
+async def take_penalty(guild_id, user_id, scores):
     pass
-async def remove_penalty(guild_id, user_id, scores):
-    pass
-async def list_penalties(guild_id, user_id):
-    pass
+async def list_penalties(guild_id, member_id):
+
+    select_query = f'SELECT * FROM penalties WHERE guild_id = {guild_id} AND member_id = {member_id} LIMIT 20'
+
+    penalties = []
+    async with aiosqlite.connect(path) as db:
+        db.row_factory = aiosqlite.Row
+        async with db.execute(select_query) as cursor:
+            async for row in cursor:
+                penalty = {}
+                for key in row.keys():
+                    penalty[key] = row[key]
+                penalties.append(penalty)
+
+    return penalties
+
 async def set_penalty_limits(guild_id, limit_scores, limit_period):
     pass
