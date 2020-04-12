@@ -64,6 +64,7 @@ class Guides(commands.Cog):
         else:
             await ctx.send('**Неверное использование команды! Пример: *!addguide Гайд 1|В этом гайде описано использование...***')
 
+    @commands.has_role("Mod")
     @commands.command(name='delguide')
     async def delguide(self, ctx, guide_id):
         try:
@@ -77,7 +78,12 @@ class Guides(commands.Cog):
             await ctx.send('**Гайд успешно удален!**')
         elif result == 'success':
             await ctx.send('**Гайд не найден!**')
-
+            
+    @delguide.error
+    async def kick_error(self, ctx, error):
+        if isinstance(error, commands.MissingRole):
+            await ctx.send('Для выполнения этой команды, необходима роль *Mod*!')
+            
     def cog_unload(self):
         self.bot.help_command = self._original_help_command
 

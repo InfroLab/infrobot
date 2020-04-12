@@ -156,7 +156,7 @@ class Moderation(commands.Cog):
     @commands.bot_has_permissions(manage_roles=True)
     async def unmute(self, ctx, member : discord.Member, *, reason=None):
         roles = ctx.guild.roles
-        text_channel = ctx.channel
+        text_channel = ctx.channel # TODO: Fix this command
         mute_role = None
         
         #Looking for for given role

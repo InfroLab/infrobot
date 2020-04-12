@@ -31,5 +31,6 @@ class History(commands.Cog):
     async def history_error(self, ctx, error):
         if isinstance(error, commands.CheckFailure):
             await ctx.send('**У вас нет прав администратора.**')
+            
 def setup(bot):
     bot.add_cog(History(bot))

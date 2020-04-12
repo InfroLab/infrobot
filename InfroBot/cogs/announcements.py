@@ -39,7 +39,7 @@ class Announcements(commands.Cog):
         embed.add_field(name=news_locale[lang]['author'], value=ctx.author.display_name, inline=False)
         embed.add_field(name=title, value=text, inline=False)
         embed.set_thumbnail(url=ctx.author.avatar_url)
-        embed.color = discord.Color.blue()
+        embed.colour = discord.Color.blue()
 
         #Checking for third parameter
         if len(args_list) == 3:
@@ -89,7 +89,7 @@ class Announcements(commands.Cog):
         text = args_list[1]
         time = args_list[2]
         time = datetime.now() + timedelta(minutes=int(time)) #Taking current time and adding the (time x minutes) 
-        time = time.strftime("%d/%m/%Y, %H:%M:%S")
+        time = time.strftime("%Y-%m-%d, %H:%M:%S")
         await repo.add_publication(ctx.guild.id, channel.id, title, text, time)
 
     @publication.error

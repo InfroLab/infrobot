@@ -21,6 +21,7 @@ class Stats(commands.Cog):
         self.collect_hourly_stat.start()
 
     @commands.command(name='stats')
+    @commands.has_permissions(administrator=True)
     async def stats(self, ctx, arg):
         if arg == 'messages':
             if ctx.guild:
@@ -32,11 +33,17 @@ class Stats(commands.Cog):
                 )
                 for key in stat.keys():
                     stat_embed.add_field(name=key, value=stat[key])
-                await ctx.send(embed=stat_embed)
+                await ctx.send(embed=stat_embed)   
+    
+    @stats.error
+    async def stats(self, ctx, error):
+        if isinstance(error, commands.CheckFailure):
+            await ctx.send('**У вас нет прав администратора.**')
 
     @commands.command(name='addstat')
     async def addstat(self, ctx):
         await add_guild(ctx.guild)
+        await ctx.send('**Сбор статистики по серверу включен.**', delete_after=60)
 
     # Task for collecting guild stats
     @tasks.loop(minutes=4,seconds=30)
