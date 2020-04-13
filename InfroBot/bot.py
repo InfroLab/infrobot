@@ -23,8 +23,8 @@ bot.locales = {} # Servers locales
 # Bot loaded notification
 @bot.event
 async def on_ready():
-    bot.locales = await repo.get_server_locales()
     print('Loading locales...')
+    bot.locales = await repo.get_server_locales()
     await bot.change_presence(status=discord.Status.online, activity=discord.Game(name=config['activity']))
     print('Bot has successfully loaded and is ready for work.')
 
