@@ -26,7 +26,9 @@ class Scheduler(commands.Cog):
     @tasks.loop(seconds=15)
     async def period_task_looper(self):
         now = hour_rounder(datetime.now())
-        for task_plan in Scheduler.period_tasks_list:
+        cnt = 0
+        while(cnt < len(Scheduler.period_tasks_list)):
+            task_plan = Scheduler.period_tasks_list[cnt]
             period = task_plan['period']
             last = task_plan['last']
             task = task_plan['task']
@@ -34,19 +36,27 @@ class Scheduler(commands.Cog):
             if not last:
                 task_plan['last'] = now
                 await task(self.bot)
+                Scheduler.period_tasks_list[cnt] = task_plan
+                cnt += 1
                 continue
             elif (now-last).seconds >= period:
                 if period == periods['3h'] and now.hour in (0,3,6,9,12,15,18,21):
                     task_plan['last'] = now
                     await task(self.bot)
+                    Scheduler.period_tasks_list[cnt] = task_plan
+                    cnt += 1
                     continue
                 elif period == periods['6h'] and now.hour in (0,6,12,18):
                     task_plan['last'] = now
                     await task(self.bot)
+                    Scheduler.period_tasks_list[cnt] = task_plan
+                    cnt += 1
                     continue
                 elif period == periods['12h'] and now.hour in (0,12):
                     task_plan['last'] = now
                     await task(self.bot)
+                    Scheduler.period_tasks_list[cnt] = task_plan
+                    cnt += 1
                     continue
 
 

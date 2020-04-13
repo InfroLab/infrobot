@@ -10,13 +10,10 @@ from cogs.scheduler import Scheduler
 
 async def collect_hourly_stat(bot):
     now = datetime.now()
-    nearest_hour = hour_rounder(now)
-    delta = now - nearest_hour
-    if delta.seconds < 300:
-        print(f"[{now.strftime('%Y-%m-%d %H:%M')}][STATS TASK]: Collecting guilds stats for this hour!")
-        for guild in bot.guilds:
-            await collect_current_users(guild.id, guild.members)
-        print(f"[{now.strftime('%Y-%m-%d %H:%M')}][STATS TASK]: Guilds stats collection done!")
+    print(f"[{now.strftime('%Y-%m-%d %H:%M')}][STATS TASK]: Collecting guilds stats for this hour!")
+    for guild in bot.guilds:
+        await collect_current_users(guild.id, guild.members)
+    print(f"[{now.strftime('%Y-%m-%d %H:%M')}][STATS TASK]: Guilds stats collection done!")
 
 class Stats(commands.Cog):
 
