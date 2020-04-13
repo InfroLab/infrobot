@@ -58,6 +58,7 @@ class Scheduler(commands.Cog):
                     Scheduler.period_tasks_list[cnt] = task_plan
                     cnt += 1
                     continue
+            cnt += 1
 
 
     @classmethod

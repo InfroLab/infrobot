@@ -14,7 +14,7 @@ class Penalty(commands.Cog):
 
     @commands.has_role('Mod')
     @commands.command(name='penalty')
-    async def penalty(self, ctx, sub, member : discord.Member, scores=None, *, reason=None):
+    async def penalty(self, ctx, sub, member : discord.Member, scores=None, *, reason='-'):
         if sub == 'give':
             if not scores:
                 await ctx.send('**Не задано количество штрафных очков.**', delete_after=30)

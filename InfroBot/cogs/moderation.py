@@ -194,7 +194,10 @@ class Moderation(commands.Cog):
     @commands.command(name='invite', brief=invite_args['brief'], help=invite_args['help'], description=invite_args['description'], usage=invite_args['usage'])
     @commands.has_role("Mod")
     @commands.bot_has_permissions(create_instant_invite=True)
-    async def invite(self, ctx, age="0", uses=0):
+    async def invite(self, ctx, age="0", uses=0, kick_after=None):
+        temporary = False
+        if kick_after:
+            temporary = True
         age_dict ={
             "0" : 0,
             "30m" : 1800,
@@ -206,7 +209,7 @@ class Moderation(commands.Cog):
 
         time = age_dict[age]
 
-        invite = await ctx.channel.create_invite(max_age=time, max_uses=uses)
+        invite = await ctx.channel.create_invite(max_age=time, max_uses=uses, temporary=temporary)
         await ctx.send(f"**:link: Invite link created: {invite.url} :link:**")
 
     @invite.error
