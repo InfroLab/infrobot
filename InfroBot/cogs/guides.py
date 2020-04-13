@@ -54,13 +54,13 @@ class Guides(commands.Cog):
     @commands.command(name='addguide')
     async def addguide(self, ctx, *, args=''):
         args = args.split('|')
-        # title = args[0]
-        # desc = args[1]
         if len(args) == 2:
             title = args[0]
             desc = args[1]
             await add_guild_guide(ctx.guild.id, title, desc, ctx.author.name+'#'+ctx.author.discriminator)
-            await ctx.send('**Новая ссылка добавлена.**')
+            await ctx.send('**Новая ссылка добавлена.**')        
+            # Delete the message that called the command
+            await ctx.message.delete(delay=120)
         else:
             await ctx.send('**Неверное использование команды! Пример: *!addguide Гайд 1|В этом гайде описано использование...***')
 

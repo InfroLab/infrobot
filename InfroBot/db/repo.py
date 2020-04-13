@@ -164,17 +164,17 @@ async def get_guild_guides(guild_id, query):
     return guides
 
 # Add guild guide
-async def add_guild_guide(guild_id, text, desc, author, image=None):
+async def add_guild_guide(guild_id, title, desc, author, image=None):
     # Preprocessing text and desc for quotes
-    text.replace('"', "'")
+    title.replace('"', "'")
     desc.replace('"', "'")
-    text = '"' + text + '"'
+    title = '"' + title + '"'
     desc = '"' + desc + '"'
 
     if not image:
         image = 'NULL'
 
-    insert_query = f"INSERT INTO guides VALUES ({guild_id}, {text}, {desc}, '{author}', '{image}')"
+    insert_query = f"INSERT INTO guides (guild_id, title, desc, author, image) VALUES ({guild_id}, {title}, {desc}, '{author}', '{image}')"
 
     async with aiosqlite.connect(path) as db:
         await db.execute(insert_query)
