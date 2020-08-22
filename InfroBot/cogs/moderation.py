@@ -101,7 +101,7 @@ class Moderation(commands.Cog):
         await ctx.send(f"**{row.user.mention} was not found in banlist!**")
 
     @unban.error
-    async def ban_error(self, ctx, error):
+    async def unban_error(self, ctx, error):
         if isinstance(error, commands.CheckFailure):
             await ctx.send("**Looks like you don't have Ban Memberspermissions!**")
         elif isinstance(error, commands.MissingRole):
