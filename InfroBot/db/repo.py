@@ -78,7 +78,7 @@ async def add_guild(guild):
     locale_map = {'russia': 'ru'}
     locale = locale_map.get(region,'en')
  
-    guilds_query = f'INSERT INTO guilds (guild_id, total_users, admin_id, total_t_channels, total_v_channels, total_banned, total_messages, is_stat_on, locale, last_toggle) VALUES ({guild.id}, {guild.member_count}, {guild.owner.id}, {t_channels_cnt}, {v_channels_cnt}, {bans_cnt}, {msgs_cnt}, {is_stat_on}, {locale}, {last_toggle})'
+    guilds_query = f"INSERT INTO guilds (guild_id, total_users, admin_id, total_t_channels, total_v_channels, total_banned, total_messages, is_stat_on, locale, last_toggle) VALUES ({guild.id}, {guild.member_count}, {guild.owner.id}, {t_channels_cnt}, {v_channels_cnt}, {bans_cnt}, {msgs_cnt}, {is_stat_on}, '{locale}', {last_toggle})"
 
     async with aiosqlite.connect(path) as db:
         await db.execute(guilds_query)

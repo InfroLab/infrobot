@@ -44,8 +44,17 @@ class Stats(commands.Cog):
                     stat_embed.add_field(name=key, value=stat[key])
                 await ctx.send(embed=stat_embed)   
     
+    @commands.command(name='players')
+    @commands.has_permissions(administrator=True)
+    async def players(self, ctx, arg):
+        if arg == '1337':
+            for m in ctx.guild.members:
+                for r in m.roles:
+                    if r.name == 'Согильдеец':
+                        print(m.mention)
+
     @stats.error
-    async def stats(self, ctx, error):
+    async def stats_error(self, ctx, error):
         if isinstance(error, commands.CheckFailure):
             await ctx.send('**У вас нет прав администратора.**')
 
